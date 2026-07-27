@@ -1,3 +1,15 @@
+> ### 📋 Submission notes
+> Delivery documentation lives in [`docs/`](docs/) — start with [`docs/README.md`](docs/README.md).
+> The AI context file the challenge asks for is [`CLAUDE.md`](CLAUDE.md).
+>
+> **Current state:** research, planning and documentation are complete; application code has not
+> started. [`docs/DELIVERY_LOG.md`](docs/DELIVERY_LOG.md) records what has actually been built and
+> verified, and [`docs/PLAN.md`](docs/PLAN.md) records what comes next.
+>
+> The original challenge brief follows, unchanged.
+
+---
+
 # idealista Android challenge
 idealista Android crew needs you! We need a fellow to face our everyday challenges: new features, problem fixes, UI design, performance, security, backwards compatibility, testing...
 
