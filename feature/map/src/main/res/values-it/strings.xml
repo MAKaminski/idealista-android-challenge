@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="map_title">Mappa</string>
+    <string name="map_empty">Nessun immobile da mostrare sulla mappa.</string>
+    <string name="map_selection_summary">%1$d locali · %2$d bagni · %3$s</string>
+    <plurals name="map_pin_count">
+        <item quantity="one">%1$d immobile sulla mappa</item>
+        <item quantity="other">%1$d immobili sulla mappa</item>
+    </plurals>
+</resources>

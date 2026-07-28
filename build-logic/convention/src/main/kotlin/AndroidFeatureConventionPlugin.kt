@@ -25,6 +25,22 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             add("implementation", project(":core:data"))
             add("implementation", project(":core:designsystem"))
             add("testImplementation", project(":core:testing"))
+
+            add("implementation", libs.findLibrary("androidx-fragment-ktx").get())
+            add("implementation", libs.findLibrary("androidx-lifecycle-runtime-ktx").get())
+            add("implementation", libs.findLibrary("androidx-lifecycle-viewmodel-ktx").get())
+            add("implementation", libs.findLibrary("androidx-recyclerview").get())
+            add("implementation", libs.findLibrary("androidx-swiperefreshlayout").get())
+            add("implementation", libs.findLibrary("coil").get())
+            add("implementation", libs.findLibrary("coil-network-okhttp").get())
+            add("implementation", libs.findLibrary("androidx-browser").get())
+            add("implementation", libs.findLibrary("hilt-navigation-fragment").get())
+
+            add("testImplementation", libs.findLibrary("junit").get())
+            add("testImplementation", libs.findLibrary("kotlinx-coroutines-test").get())
+            add("testImplementation", libs.findLibrary("turbine").get())
+            add("testImplementation", libs.findLibrary("robolectric").get())
+            add("testImplementation", libs.findLibrary("androidx-test-core").get())
         }
     }
 }

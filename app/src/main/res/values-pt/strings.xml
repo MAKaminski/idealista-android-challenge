@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_properties">Imóveis</string>
+    <string name="nav_favorites">Favoritos</string>
+    <string name="nav_settings">Definições</string>
+    <string name="nav_map">Mapa</string>
+</resources>

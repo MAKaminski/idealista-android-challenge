@@ -11,3 +11,7 @@
 .cxx
 local.properties
 *.hprof
+
+# Synced from the root list.json/detail.json by :core:data:syncApiFixtures
+core/data/src/test/resources/fixtures/
+feature/list/src/test/resources/fixtures/

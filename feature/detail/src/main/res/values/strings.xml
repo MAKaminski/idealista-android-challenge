@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="detail_title">Property detail</string>
+    <string name="detail_error">We couldn\'t load this property.</string>
+    <string name="detail_retry">Try again</string>
+    <string name="detail_characteristics">Characteristics</string>
+    <string name="detail_description">Description</string>
+    <string name="detail_energy">Energy certificate</string>
+    <string name="detail_energy_consumption">Consumption: %1$s</string>
+    <string name="detail_energy_emissions">Emissions: %1$s</string>
+    <string name="detail_rooms">%1$d rooms</string>
+    <string name="detail_baths">%1$d bathrooms</string>
+    <string name="detail_floor">Floor %1$s</string>
+    <string name="detail_lift">Lift</string>
+    <string name="detail_no_lift">No lift</string>
+    <string name="detail_community_costs">Community costs %1$s</string>
+    <string name="detail_gallery_image">Photo %1$d of %2$d: %3$s</string>
+    <string name="detail_favorite_add">Add to favorites</string>
+    <string name="detail_favorite_remove">Remove from favorites</string>
+    <string name="favorite_saved_on">Favorited on %1$s</string>
+    <string name="detail_features">Features and extras</string>
+    <string name="detail_location">Location</string>
+    <string name="detail_feature_air_conditioning">Air conditioning</string>
+    <string name="detail_feature_box_room">Box room</string>
+    <string name="detail_feature_pool">Swimming pool</string>
+    <string name="detail_feature_terrace">Terrace</string>
+    <string name="detail_feature_garden">Garden</string>
+    <string name="detail_feature_parking">Parking</string>
+    <string name="detail_feature_parking_included">Parking included</string>
+    <string name="detail_feature_exterior">Exterior</string>
+    <string name="detail_no_features">Nothing extra listed for this property.</string>
+    <string name="detail_section_count">%1$d</string>
+    <string name="detail_open_listing">Open on idealista</string>
+    <string name="detail_open_map">Open in Maps</string>
+    <string name="detail_photo_open">Open photo %1$d in the browser</string>
+    <string name="detail_translated_note">Translated from Spanish</string>
+</resources>

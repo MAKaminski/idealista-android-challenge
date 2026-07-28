@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_language_section">Idioma</string>
+    <string name="settings_language_explainer">Solo afecta a esta aplicación. Tu dispositivo no cambia.</string>
+    <string name="settings_language_system">Predeterminado del sistema</string>
+    <string name="settings_language_english">Inglés</string>
+    <string name="settings_language_spanish">Español</string>
+    <string name="settings_language_french">Francés</string>
+    <string name="settings_language_portuguese">Portugués</string>
+    <string name="settings_language_italian">Italiano</string>
+    <string name="settings_language_chinese">Chino</string>
+</resources>

@@ -29,8 +29,18 @@ Alternatives considered:
 |---|---|
 | `propertyCode`, address, district, neighborhood | `moreCharacteristics` (rooms, lift, community costs, floor…) |
 | price + currency suffix, operation, property type | `energyCertification` |
-| thumbnail, coordinates | full image gallery with `localizedName` |
-| | `propertyComment` |
+| thumbnail, coordinates | `propertyComment` |
+| **the photo gallery** | |
+
+**Amended 2026-07-28: photos are identity, not rich content.** The first implementation took the
+gallery from the detail response, which is exactly the mistake this ADR exists to prevent — the
+response's images are ad 1's rooms, so three of the four ads showed the wrong flat's photos. Each
+list ad carries its own `multimedia.images`, and that is now the source. The response's gallery is
+used only when the cached ad has no images at all.
+
+The cost is real and accepted: ad 1's detail payload carries ten photos with localized room names
+(`Salón`, `Dormitorio`), while its list entry carries seven without them. Seven correct photos beat
+ten that might belong to another property.
 
 The detail payload's `adid`, `priceInfo` and `ubication` are **discarded on purpose**, with a comment
 at the merge site saying why.

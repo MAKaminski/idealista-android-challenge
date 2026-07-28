@@ -83,7 +83,112 @@ comes from running it, not from reading it.
 suppressing it (it's an honest signal that KSP hasn't finished its own AGP 9 migration), and amending
 ADR-0001 with the corrections rather than silently re-pinning the versions.
 
-## Sessions 3+ — features
+## Sessions 3–6 — the app (2026-07-28)
 
-Not started. Each session appends here: what was generated, what was hand-corrected, and the actual
-command output backing the claim, mirrored in [`DELIVERY_LOG.md`](DELIVERY_LOG.md).
+Data layer, both XML screens, the Compose screen and the tests. The pattern from session 2 held all
+the way through: the *shape* the AI proposed was consistently right, and the *details* were
+consistently wrong until something ran them.
+
+### What the compiler, lint and the tests caught
+
+| Where | What was wrong |
+|---|---|
+| Coil 3.5.0 | Ships Kotlin 2.4 metadata; the AGP-managed 2.2.10 compiler cannot read it. Pinned to 3.4.0 |
+| Robolectric | No API 37 runtime; every Robolectric test failed until pinned to `sdk=36` |
+| Test dispatchers | A `TestDispatcher` built in `@Before` carries its own scheduler — six tests died on `DispatchException` |
+| Turbine coordinates | `app.cash:turbine` is wrong; it is `app.cash.turbine:turbine` |
+| `layout_marginHorizontal` | API 26+, against minSdk 24 — lint failed the build |
+| `app_name` | Lint failed on a missing Spanish translation for a brand name; marked `translatable="false"` |
+| Compose test selector | `onNodeWithText` cannot click an icon; it needed `onNodeWithContentDescription` |
+| CI vs local | Robolectric's SDK 36 sandbox needs a Java 21 JVM — CI was red while local was green |
+
+### The one that mattered
+
+`retry re-subscribes after a failure` failed on its first run and exposed a genuine defect: `catch`
+outside `flatMapLatest` completed the whole flow chain, so after any network error the retry button
+was permanently dead. The screen would have looked entirely normal in review and in a manual
+click-through. That test is the reason it isn't shipping.
+
+### Judgment calls made by hand, not by the AI
+
+- Leaving the `disallowKotlinSourceSets` warning **visible** instead of suppressing it — it is honest
+  signal that the project sits ahead of KSP's own AGP 9 migration.
+- Skipping SafeArgs rather than adding a plugin for one string argument.
+- Keeping the Espresso test in the repository, compiled on every build, while stating plainly
+  everywhere that it has never been executed. The alternatives — deleting it, or counting it as
+  passing — are both worse.
+- Amending ADR-0001 with the evidence each time a pin turned out to be wrong, rather than quietly
+  editing the version numbers.
+
+## Session 7 — three reports from the running app (2026-07-28)
+
+Insets, external links and filters, prompted by a user with the app in front of them. Different
+failure mode from the earlier sessions: nothing here was caught by a compiler. The reports were
+*"fix the margin so it doesn't look like shit"*, *"if URLs are provided then embed links"*, and
+*"add filters based on the tags +/- standard RE logic"*.
+
+### What the AI got right without prompting
+
+Diagnosing the margin as an edge-to-edge inset bug rather than a padding value, and fixing it at all
+four surfaces that own a system bar rather than the one in the screenshot. A fixed `marginTop` would
+have satisfied both screenshots and been wrong on the next device.
+
+### What was corrected by hand
+
+| Correction | Why |
+|---|---|
+| The AI offered filters over lift, floor and community costs | Those are detail-only fields, and the detail response always describes ad 1 (ADR-0005). Every ad would have matched identically. Cut before writing them. |
+| Listing URLs presented without qualification | The mock codes are `1`–`4`; real ones are eight digits, so the links cannot resolve. The KDoc, the ADR and the README now say so instead of letting a reviewer click and find out. |
+| `:core:model` tests were not running | The suite was reported as 86 tests, but `testDebugUnitTest` skips a variant-less JVM module — eighteen of them never ran. Found by checking the task graph rather than trusting the number. Fixed with an alias in the convention plugin. |
+| The insets fix was nearly logged as covered | It has no test and cannot easily have one. `TESTING.md` now carries a row that says zero, not a row that omits it. |
+
+### The pattern worth naming
+
+Sessions 3–6 were wrong about facts a build could check. This session was wrong about facts only a
+*payload* could check — filters that compile, run, and quietly match everything. The defence is the
+same either way: run it and look, rather than reading the code and agreeing with it.
+
+## Session 8 — settings and five languages (2026-07-28)
+
+### What was corrected by hand
+
+| Correction | Why |
+|---|---|
+| The AI's first design stored the language in a `SharedPreference` and wrapped `Context` | Correct for 2020, wrong since Android 13: the system owns per-app language and shows it in its own settings, so a private copy is a second source of truth that goes stale invisibly. Replaced with `AppCompatDelegate` and no storage at all (ADR-0009). |
+| `LazyColumn` for six fixed rows | Broke four tests on rows below the fold, and — more importantly — broke `selectableGroup`, so a screen reader saw six unrelated radios rather than one group. The test failure was the symptom; the container was the bug. |
+| Five `AppLocales` tests that could never pass | Written confidently, failed, and a probe showed why: Robolectric has no per-app locale store, so the call under test is a no-op there. Deleted rather than made to pass against a stub. |
+
+### The check that was worth a build cycle
+
+Lint's `MissingTranslation` was *assumed* to be guarding five locales across five modules. Rather
+than assume, one string was deleted from `values-fr` and lint run: it failed with the exact missing
+key, and went green again when restored. Five languages is precisely the surface that rots quietly,
+and "lint probably covers it" is not evidence.
+
+## Session 9 — map, translation, Chinese, README (2026-07-28)
+
+### What was corrected by hand
+
+| Correction | Why |
+|---|---|
+| The AI's first instinct for translation was to bundle hand-written translations of the four mock ads | That translates *this fixture*, not the app. ~80 000 characters of generated prose in `values-*/` would have implied a capability the app did not have. Replaced with on-device ML Kit, which works on whatever the API sends |
+| A `LazyColumn` for the six-row settings list | Broke four tests on rows below the fold and — worse — broke `selectableGroup`, so a screen reader saw six unrelated radios instead of one group. The test failure was the symptom; the container was the bug |
+| A vacuous assertion in a new test | `assertEquals("3", x.propertyCode.let { "3" })` — always true. Caught on re-reading the diff, not by the suite, which is exactly the kind of test that inflates a count without testing anything |
+| Screenshots that were silently photo-less | The first harness rendered a detached view hierarchy, so Coil never resolved and every photo came out grey. The build was green throughout. Found by opening the PNG |
+
+### The recurring lesson, in its clearest form yet
+
+The screenshot harness went green on the first run and produced images with no photographs in them.
+Nothing failed; a build cannot tell you that a picture is wrong. Three rounds of *look at the actual
+output* fixed it — a missing lifecycle owner, a detached hierarchy, and a layout pass issued after
+the capture.
+
+That is the same failure mode as the ad-1 photos bug from session 6, and the same fix: run it and
+look, rather than reading the code and agreeing with it.
+
+### Honest assessment of the AI's contribution
+
+It wrote nearly all of the code and most of the prose, and it was fast at both. It was also wrong
+about a specific, checkable fact roughly once per build cycle. The delivery is only trustworthy
+because every claim in it was run before it was written down — which is the entire method, and the
+reason `DELIVERY_LOG.md` records commands and their real output rather than intentions.

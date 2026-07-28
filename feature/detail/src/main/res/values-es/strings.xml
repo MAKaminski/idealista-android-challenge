@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="detail_title">Detalle de la vivienda</string>
+    <string name="detail_error">No hemos podido cargar esta vivienda.</string>
+    <string name="detail_retry">Reintentar</string>
+    <string name="detail_characteristics">Características</string>
+    <string name="detail_description">Descripción</string>
+    <string name="detail_energy">Certificado energético</string>
+    <string name="detail_energy_consumption">Consumo: %1$s</string>
+    <string name="detail_energy_emissions">Emisiones: %1$s</string>
+    <string name="detail_rooms">%1$d habitaciones</string>
+    <string name="detail_baths">%1$d baños</string>
+    <string name="detail_floor">Planta %1$s</string>
+    <string name="detail_lift">Ascensor</string>
+    <string name="detail_no_lift">Sin ascensor</string>
+    <string name="detail_community_costs">Gastos de comunidad %1$s</string>
+    <string name="detail_gallery_image">Foto %1$d de %2$d: %3$s</string>
+    <string name="detail_favorite_add">Añadir a favoritos</string>
+    <string name="detail_favorite_remove">Quitar de favoritos</string>
+    <string name="favorite_saved_on">Guardado el %1$s</string>
+    <string name="detail_features">Extras</string>
+    <string name="detail_location">Ubicación</string>
+    <string name="detail_feature_air_conditioning">Aire acondicionado</string>
+    <string name="detail_feature_box_room">Trastero</string>
+    <string name="detail_feature_pool">Piscina</string>
+    <string name="detail_feature_terrace">Terraza</string>
+    <string name="detail_feature_garden">Jardín</string>
+    <string name="detail_feature_parking">Parking</string>
+    <string name="detail_feature_parking_included">Parking incluido</string>
+    <string name="detail_feature_exterior">Exterior</string>
+    <string name="detail_no_features">Esta vivienda no lista extras.</string>
+    <string name="detail_section_count">%1$d</string>
+    <string name="detail_open_listing">Ver en idealista</string>
+    <string name="detail_open_map">Abrir en Mapas</string>
+    <string name="detail_photo_open">Abrir la foto %1$d en el navegador</string>
+    <string name="detail_translated_note">Traducido del español</string>
+</resources>

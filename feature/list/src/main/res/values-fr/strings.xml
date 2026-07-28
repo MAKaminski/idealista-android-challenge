@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_title">Logements</string>
+    <string name="list_error">Impossible de charger les logements.</string>
+    <string name="list_retry">Réessayer</string>
+    <string name="list_empty">Aucun logement à afficher pour le moment.</string>
+    <string name="list_summary">%1$d pièces · %2$d salles de bain · %3$s</string>
+    <string name="favorite_saved_on">Ajouté aux favoris le %1$s</string>
+    <string name="favorite_add">Ajouter aux favoris</string>
+    <string name="favorite_remove">Retirer des favoris</string>
+    <string name="ad_thumbnail_description">Photo du logement situé %1$s</string>
+    <string name="filter_sale">À vendre</string>
+    <string name="filter_rent">À louer</string>
+    <string name="filter_favorites">Favoris</string>
+    <string name="filter_rooms">3 pièces et +</string>
+    <string name="filter_baths">2 SdB et +</string>
+    <string name="filter_exterior">Extérieur</string>
+    <string name="filter_parking">Parking</string>
+    <string name="filter_air_conditioning">Clim</string>
+    <string name="filter_pool">Piscine</string>
+    <string name="filter_terrace">Terrasse</string>
+    <string name="filter_garden">Jardin</string>
+    <string name="filter_price_low">Prix ↑</string>
+    <string name="filter_clear">Effacer</string>
+    <plurals name="list_result_count">
+        <item quantity="one">%1$d logement</item>
+        <item quantity="other">%1$d logements</item>
+    </plurals>
+    <string name="list_empty_filtered">Aucun logement ne correspond à ces filtres.</string>
+</resources>

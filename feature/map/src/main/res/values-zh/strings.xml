@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="map_title">地图</string>
+    <string name="map_empty">暂无可在地图上显示的房源。</string>
+    <string name="map_selection_summary">%1$d室 · %2$d卫 · %3$s</string>
+    <plurals name="map_pin_count">
+        <item quantity="other">地图上有%1$d套房源</item>
+    </plurals>
+</resources>

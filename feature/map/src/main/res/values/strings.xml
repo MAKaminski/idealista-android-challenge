@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="map_title">Map</string>
+    <string name="map_empty">No properties to place on the map yet.</string>
+    <string name="map_selection_summary">%1$d rooms · %2$d baths · %3$s</string>
+    <plurals name="map_pin_count">
+        <item quantity="one">%1$d property on the map</item>
+        <item quantity="other">%1$d properties on the map</item>
+    </plurals>
+</resources>

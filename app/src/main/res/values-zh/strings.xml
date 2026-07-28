@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_properties">房源</string>
+    <string name="nav_favorites">收藏</string>
+    <string name="nav_map">地图</string>
+    <string name="nav_settings">设置</string>
+</resources>

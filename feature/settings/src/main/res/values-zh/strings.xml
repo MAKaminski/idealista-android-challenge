@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">设置</string>
+    <string name="settings_language_section">语言</string>
+    <string name="settings_language_explainer">仅适用于本应用，不会更改设备设置。</string>
+    <string name="settings_language_system">跟随系统</string>
+    <string name="settings_language_english">英语</string>
+    <string name="settings_language_spanish">西班牙语</string>
+    <string name="settings_language_french">法语</string>
+    <string name="settings_language_portuguese">葡萄牙语</string>
+    <string name="settings_language_italian">意大利语</string>
+    <string name="settings_language_chinese">中文</string>
+</resources>

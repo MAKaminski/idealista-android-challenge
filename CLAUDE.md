@@ -23,9 +23,15 @@ requirement for a bonus.
 
 | Phase | State |
 |---|---|
-| Research + planning + docs | ✅ delivered |
-| Step 1 — Gradle scaffold (8 modules, convention plugins, Hilt + Room gate) | ✅ builds green |
-| Steps 2–9 — app code, tests, CI | ⛔ not started |
+| Steps 1–9 — build, data, both XML screens, Compose, tests, CI, docs | ✅ **complete** |
+| Beyond the brief — accordions, filters, links, insets, six languages, map, translation | ✅ **complete** |
+| Verification | `lint testDebugUnitTest assembleDebug` green · **122 tests** |
+
+The app is feature-complete against the brief. Two things are not covered by an executed test: the
+Espresso end-to-end test (authored and compiling, needs a device) and the window-insets fix (needs a
+real window). Applying a locale is a third: Robolectric's sandbox has no per-app locale store, so
+that call cannot be unit-tested at all. All three are stated as such in `docs/TESTING.md` rather
+than counted as passing.
 
 Do not describe unwritten code as if it exists. `docs/DELIVERY_LOG.md` is the source of truth for
 what has actually been built and verified.
@@ -43,6 +49,7 @@ echo "sdk.dir=$HOME/Android/sdk" > local.properties
 Then (all commands from the repo root, via the wrapper — never a system `gradle`):
 
 ```bash
+./gradlew runDebug               # build, install and LAUNCH on a device/emulator
 ./gradlew assembleDebug          # build the debug APK
 ./gradlew testDebugUnitTest      # all JVM + Robolectric tests
 ./gradlew lint                   # Android lint
@@ -55,7 +62,8 @@ into CI, but they cannot be executed locally — say so rather than reporting th
 ## 4. Pinned toolchain
 
 AGP 9.3.1 · Gradle 9.6.1 · Kotlin 2.2.10 (**AGP's built-in Kotlin**) · KSP 2.2.10-2.0.2 ·
-Hilt 2.60.1 · Room 2.8.4
+Hilt 2.60.1 · Room 2.8.4 · Compose BOM 2026.06.01 · Coil **3.4.0** (3.5.0 ships Kotlin 2.4 metadata
+this compiler cannot read) · Robolectric pinned to `sdk=36`
 compileSdk 37 + compileSdkMinor 1 · targetSdk 37 · minSdk 24 (core library desugaring) · JDK 17
 toolchain (auto-provisioned by the foojay resolver)
 
@@ -85,21 +93,26 @@ levels live in `build-logic`'s `Sdk` object and module scripts only set their `n
 ## 5. Module map and dependency rules
 
 ```
-:app                  Application, Hilt setup, MainActivity, nav graph
-:core:model           pure-Kotlin domain models — no Android dependencies
+:app                  Application, Hilt setup, MainActivity, bottom nav, screen wiring
+:core:model           pure-Kotlin domain models, filter logic, URL builders — no Android deps
 :core:data            Retrofit + kotlinx.serialization, Room, DTOs, mappers, repositories
-:core:designsystem    Material 3 theme, shared styles/drawables, Compose theme
-:core:testing         test rules, fakes, JSON fixtures
+:core:designsystem    Material 3 theme + matching Compose theme, drawables, shared formatters,
+                      AccordionSection, ExternalLinks
+:core:testing         shared test fixtures (TestAds)
 :feature:list         XML list screen
-:feature:detail       XML detail screen (+ one embedded ComposeView component)
+:feature:detail       XML detail screen (+ an embedded ComposeView characteristics panel)
 :feature:favorites    Compose-only screen
+:feature:map          XML map screen — osmdroid over OpenStreetMap tiles
+:feature:settings     Compose-only settings screen — the language picker
 ```
 
 Rules:
 
 - `:feature:*` → `:core:data` → `:core:model`. Features never depend on each other.
 - **DTOs never leave `:core:data`.** Map to `:core:model` types at the data-source boundary.
-- `:core:model` stays free of Android imports so it tests on the JVM.
+- `:core:model` stays free of Android imports so it tests on the JVM. It is a plain JVM module, so
+  its convention plugin aliases `testDebugUnitTest` to `test` — otherwise the one command CI runs
+  would skip it silently.
 
 ## 6. API quirks — do NOT "fix" these
 
@@ -107,10 +120,13 @@ The mock API is quirky by design. An agent that normalizes these away breaks the
 tables are in [`docs/API.md`](docs/API.md).
 
 1. **`detail.json` always returns the same payload** (ad 1) no matter which ad was opened. The
-   repository therefore **merges**: identity fields (id, address, district, price, operation,
-   thumbnail) come from the cached list ad; only rich fields (characteristics, energy certificate,
-   gallery, long comment) come from the detail response. The detail DTO's `adid`, `priceInfo` and
-   `ubication` are discarded on purpose.
+   repository therefore **merges**: identity — id, address, district, price, operation, thumbnail
+   **and the photo gallery** — comes from the cached list ad; only characteristics, the energy
+   certificate and the long comment come from the detail response. The detail DTO's `adid`,
+   `priceInfo`, `ubication` and `multimedia` are discarded on purpose.
+   **Photos are identity.** Each list ad carries its own `multimedia.images`; the response's images
+   are ad 1's rooms. Taking them from the response shipped the wrong flat's photos on three of four
+   ads — see ADR-0005 and the alignment tests before touching this.
 2. The id is a **`String` (`propertyCode`) in list** and an **`Int` (`adid`) in detail**; the price
    is `priceInfo.price.amount` in list but `priceInfo.amount` in detail. The two DTO hierarchies are
    separate — do not extract a "shared" DTO.
@@ -124,13 +140,38 @@ tables are in [`docs/API.md`](docs/API.md).
 - One `StateFlow<UiState>` per ViewModel, sealed states (`Loading`/`Content`/`Empty`/`Error`),
   collected with `repeatOnLifecycle`. No `LiveData` in new code.
 - Coroutines only; inject dispatchers, never hardcode `Dispatchers.IO` in a class under test.
-- Navigation Component + SafeArgs for screen-to-screen arguments; `SavedStateHandle` for state that
-  must survive process death.
-- All user-facing text in `strings.xml` (`values/` English, `values-es/` Spanish — the ad data is
-  Spanish). No hardcoded strings in layouts or code.
+- Screen-to-screen wiring lives in `MainActivity`, not inside a feature — a feature exposes a
+  callback (`onAdSelected`) and the host decides what to open, so features stay independent.
+  Arguments travel as fragment arguments and are read through `SavedStateHandle`, which also gets
+  process-death survival. SafeArgs is deliberately not used (see the delivery log for step 5).
+- All user-facing text in `strings.xml`, in **six** locales: `values/` (en), `values-es/`,
+  `values-fr/`, `values-pt/`, `values-it/`, `values-zh/`. No hardcoded strings in layouts or code. A string added
+  to one locale and not the rest fails `lint` on `MissingTranslation` — translate all five, and add
+  the new module's folders too if you create one.
+- The in-app language is the **platform's** per-app locale via `AppLocales`/`AppCompatDelegate`.
+  Never add a SharedPreference for it: on API 33+ the system stores the choice and shows it in its
+  own settings, and a private copy is a second source of truth that goes stale (ADR-0009).
 - `contentDescription` on every meaningful image and toggle.
 - Dates are stored as epoch millis and formatted with `java.time` +
   `DateTimeFormatter.ofLocalizedDate(MEDIUM)` in the system zone.
+- The app draws **edge-to-edge**. Anything that owns a system bar consumes its inset:
+  `fitsSystemWindows` on an `AppBarLayout`, `windowInsetsPadding` in Compose, an
+  `OnApplyWindowInsetsListener` for the bottom nav. Never fix an overlap with a fixed margin — it is
+  right on one device and wrong on every other.
+- Filtering is **client-side over the Room cache** and lives as pure functions in `:core:model`
+  (`AdFilters`, `Ad.matches`, `applyFilters`). Only offer a filter the **list** payload can answer —
+  detail-only fields describe ad 1 for every ad (see §6), so a filter over them is a lie. The chip
+  row is rebuilt from state on every emission; do not mutate chips in place.
+- Ad **content** (descriptions, comments) arrives in Spanish whatever the UI language is. It is
+  translated on-device through `AdTextTranslator`, downstream of the content emission so the screen
+  never waits, and every failure path falls back to the original (ADR-0011). Never block a render on
+  a translation, and never show a translation without saying it is one.
+- The map is osmdroid over OpenStreetMap — **no API key anywhere in this repo**. Ads without
+  coordinates are filtered out, never defaulted to `(0, 0)` (ADR-0010).
+- Screenshots are generated, not captured: `./gradlew screenshots` renders the real screens offscreen
+  into `docs/screenshots`. Never hand-edit those PNGs.
+- External destinations go through `ExternalLinks` (Custom Tabs, `ACTION_VIEW` fallback, Toast when
+  nothing handles it). Never `startActivity` a URL directly from a fragment.
 
 ## 8. Testing requirements
 
@@ -138,7 +179,10 @@ Every behavioural change ships with a test. See [`docs/TESTING.md`](docs/TESTING
 Two regression tests are load-bearing and must never be deleted:
 
 - favoriting an ad surfaces the same date on **both** the list and the detail screen;
-- opening ad 3's detail never renders ad 1's identity (the merge-strategy guard).
+- opening ad 3's detail never renders ad 1's identity (the merge-strategy guard) — pinned twice, in
+  `:core:data` and in `:feature:detail`;
+- every photo shown belongs to the ad it appears under — the detail gallery comes from the **cached
+  ad**, never from the response, whose images are always ad 1's.
 
 ## 9. Definition of done
 

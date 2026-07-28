@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorites_title">收藏</string>
+    <string name="favorites_empty">暂无收藏。点击房源上的爱心即可保存。</string>
+    <string name="favorites_remove">将%1$s从收藏中移除</string>
+    <string name="favorites_thumbnail">位于%1$s的房源照片</string>
+    <string name="favorite_saved_on">收藏于%1$s</string>
+</resources>

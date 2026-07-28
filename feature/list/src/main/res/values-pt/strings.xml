@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_title">Imóveis</string>
+    <string name="list_error">Não foi possível carregar os imóveis.</string>
+    <string name="list_retry">Tentar novamente</string>
+    <string name="list_empty">Ainda não há imóveis para mostrar.</string>
+    <string name="list_summary">%1$d divisões · %2$d casas de banho · %3$s</string>
+    <string name="favorite_saved_on">Adicionado aos favoritos a %1$s</string>
+    <string name="favorite_add">Adicionar aos favoritos</string>
+    <string name="favorite_remove">Remover dos favoritos</string>
+    <string name="ad_thumbnail_description">Fotografia do imóvel em %1$s</string>
+    <string name="filter_sale">Para venda</string>
+    <string name="filter_rent">Para arrendar</string>
+    <string name="filter_favorites">Favoritos</string>
+    <string name="filter_rooms">3+ divisões</string>
+    <string name="filter_baths">2+ casas de banho</string>
+    <string name="filter_exterior">Exterior</string>
+    <string name="filter_parking">Estacionamento</string>
+    <string name="filter_air_conditioning">A/C</string>
+    <string name="filter_pool">Piscina</string>
+    <string name="filter_terrace">Terraço</string>
+    <string name="filter_garden">Jardim</string>
+    <string name="filter_price_low">Preço ↑</string>
+    <string name="filter_clear">Limpar</string>
+    <plurals name="list_result_count">
+        <item quantity="one">%1$d imóvel</item>
+        <item quantity="other">%1$d imóveis</item>
+    </plurals>
+    <string name="list_empty_filtered">Nenhum imóvel corresponde a estes filtros.</string>
+</resources>

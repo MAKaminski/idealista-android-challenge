@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accordion_expand">Expand %1$s</string>
+    <string name="accordion_collapse">Collapse %1$s</string>
+    <string name="link_no_app">No app on this device can open that link.</string>
+</resources>

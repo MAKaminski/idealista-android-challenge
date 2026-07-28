@@ -1,6 +1,7 @@
 # Implementation plan
 
-> Status: **approved, not yet started.** Progress is tracked in [`DELIVERY_LOG.md`](DELIVERY_LOG.md).
+> Status: **complete.** Every step below is delivered and verified; see [`DELIVERY_LOG.md`](DELIVERY_LOG.md)
+> for the commands and their actual output.
 
 ## Goal
 
@@ -40,16 +41,18 @@ has a verification command that must pass before the next step starts.
 |---|---|---|---|
 | 0 | *(environment)* ✅ | Android SDK: cmdline-tools, `platforms;android-37.1`, `build-tools;37.0.0` | `sdkmanager --list_installed` ✅ |
 | 1 | `chore(build)` ✅ | Gradle wrapper 9.6.1, `libs.versions.toml`, `build-logic` convention plugins, 8 modules, Hilt + Room gate, `.gitignore` | `./gradlew assembleDebug testDebugUnitTest lint` ✅ green, configuration cache reused |
-| 2 | `feat(data)` | Retrofit + serialization DTOs, mappers, fixtures wired as test resources | `./gradlew :core:data:test` |
-| 3 | `feat(data)` | Room cache + favorites DAO, `AdRepository` incl. the detail-merge strategy | `./gradlew :core:data:test` |
-| 4 | `feat(list)` | XML list screen, ViewModel, favorite toggle + date badge, loading/error/empty states | `./gradlew :feature:list:test` |
-| 5 | `feat(detail)` | XML detail screen, `ViewPager2` gallery, merged detail, favorite FAB | `./gradlew :feature:detail:test` |
-| 6 | `feat(favorites)` | Compose favorites screen + the detail screen's `ComposeView` component | `./gradlew testDebugUnitTest` |
-| 7 | `test` | Robolectric fragment/Compose tests, Espresso e2e (authored), Jacoco report | `./gradlew testDebugUnitTest jacocoTestReport` |
-| 8 | `ci` | GitHub Actions: lint + unit tests + `assembleDebug`, reports uploaded | workflow green on the PR |
-| 9 | `docs` | Docs refreshed with real results, screenshots, requirement matrix in `README.md` | manual review |
+| 2 | `feat(data)` ✅ | Retrofit + serialization DTOs, mappers, fixtures wired as test resources | `./gradlew :core:data:testDebugUnitTest` ✅ 15 tests green |
+| 3 | `feat(data)` ✅ | Room cache + favorites DAO, `AdRepository` incl. the detail-merge strategy | `./gradlew :core:data:testDebugUnitTest` ✅ 23 tests green |
+| 4 | `feat(list)` ✅ | XML list screen, ViewModel, favorite toggle + date badge, loading/error/empty states | `./gradlew :feature:list:testDebugUnitTest` ✅ 5 tests green; APK runs |
+| 5 | `feat(detail)` ✅ | XML detail screen, `ViewPager2` gallery, merged detail, favorite FAB | `./gradlew :feature:detail:testDebugUnitTest` ✅ 5 tests green |
+| 6 | `feat(favorites)` ✅ | Compose favorites screen + the detail screen's `ComposeView` component | `./gradlew testDebugUnitTest` ✅ 4 Compose tests green |
+| 7 | `test` ✅ | Compose UI tests, Espresso e2e (authored + compiling), shared fixtures | `./gradlew testDebugUnitTest assembleDebugAndroidTest` ✅ 37 tests |
+| 8 | `ci` ✅ **pulled forward** | GitHub Actions: lint + unit tests + `assembleDebug`, reports **and the debug APK** uploaded as artifacts | workflow green on the PR |
+| 9 | `docs` ✅ | README rewritten with the requirement matrix and known limitations; TESTING/CLAUDE/AI_USAGE refreshed | manual review ✅ |
 
 A **draft PR** is opened after the first push and kept current.
+
+**Step 8 was pulled forward to run second.** Every step after it is then verified by something other than a developer running commands and reporting the result, and each green run publishes a downloadable debug APK — which is how the app gets onto a device without a local Android toolchain.
 
 ## Step 1 is a gate
 

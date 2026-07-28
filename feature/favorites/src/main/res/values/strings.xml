@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorites_title">Favorites</string>
+    <string name="favorites_empty">No favorites yet. Tap the heart on a property to save it.</string>
+    <string name="favorites_remove">Remove %1$s from favorites</string>
+    <string name="favorites_thumbnail">Photo of the property at %1$s</string>
+    <string name="favorite_saved_on">Favorited on %1$s</string>
+</resources>

@@ -41,7 +41,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             }
         }
 
-        allowEmptyTestSuites()
+        configureTestTasks()
 
         dependencies {
             add("coreLibraryDesugaring", libs.findLibrary("desugar-jdk-libs").get())
