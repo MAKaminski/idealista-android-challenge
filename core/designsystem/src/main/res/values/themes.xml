@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- One theme for XML and Compose alike, so the toolkits are visually indistinguishable. -->
+    <style name="Theme.Idealista" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/idealista_green</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/idealista_green_dark</item>
+        <item name="android:statusBarColor" tools:targetApi="21">?attr/colorSurface</item>
+    </style>
+
+    <style name="Widget.Idealista.AdCard" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">2dp</item>
+        <!-- start/end rather than marginHorizontal: that attribute is API 26+, minSdk is 24. -->
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+
+    <style name="TextAppearance.Idealista.Price" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:textStyle">bold</item>
+    </style>
+</resources>

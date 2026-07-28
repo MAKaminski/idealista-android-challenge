@@ -19,13 +19,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # JDK 17 is what the build targets; the foojay resolver would provision a
-      # toolchain anyway, but installing it here keeps the build off that path.
-      - name: Set up JDK 17
+      # Gradle runs on 21 while the *build* still targets 17 via the toolchain: Robolectric's
+      # Android SDK 36 sandbox refuses to start on a Java 17 JVM.
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3

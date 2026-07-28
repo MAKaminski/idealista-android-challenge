@@ -33,7 +33,7 @@ internal class DefaultAdRepository @Inject constructor(
     private val favoriteDao: FavoriteDao,
     private val converters: Converters,
     private val clock: Clock,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : AdRepository {
 
     /**

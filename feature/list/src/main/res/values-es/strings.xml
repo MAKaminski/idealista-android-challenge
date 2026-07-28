@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_title">Viviendas</string>
+    <string name="list_error">No hemos podido cargar las viviendas.</string>
+    <string name="list_retry">Reintentar</string>
+    <string name="list_empty">Todavía no hay viviendas que mostrar.</string>
+    <string name="list_summary">%1$d hab · %2$d baños · %3$s</string>
+    <string name="favorite_saved_on">Guardado el %1$s</string>
+    <string name="favorite_add">Añadir a favoritos</string>
+    <string name="favorite_remove">Quitar de favoritos</string>
+    <string name="ad_thumbnail_description">Foto de la vivienda en %1$s</string>
+</resources>

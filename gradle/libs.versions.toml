@@ -21,6 +21,18 @@ robolectric = "4.16.1"
 androidxTest = "1.7.0"
 turbine = "1.2.1"
 
+# UI
+appcompat = "1.7.1"
+coil = "3.4.0"
+constraintlayout = "2.2.1"
+fragment = "1.8.9"
+hiltNavigation = "1.4.0"
+lifecycle = "2.11.0"
+material = "1.14.0"
+navigation = "2.9.8"
+recyclerview = "1.4.0"
+swiperefresh = "1.2.0"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
@@ -41,6 +53,21 @@ okhttp-mockwebserver = { group = "com.squareup.okhttp3", name = "mockwebserver3-
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTest" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+
+# UI
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragment" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigation" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigation" }
+androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefresh" }
+coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }
+coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+hilt-navigation-fragment = { group = "androidx.hilt", name = "hilt-navigation-fragment", version.ref = "hiltNavigation" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 # Gradle plugins consumed as libraries by build-logic's convention plugins.
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }

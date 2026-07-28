@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_title">Properties</string>
+    <string name="list_error">We couldn\'t load the properties.</string>
+    <string name="list_retry">Try again</string>
+    <string name="list_empty">No properties to show yet.</string>
+    <string name="list_summary">%1$d rooms · %2$d baths · %3$s</string>
+    <string name="favorite_saved_on">Favorited on %1$s</string>
+    <string name="favorite_add">Add to favorites</string>
+    <string name="favorite_remove">Remove from favorites</string>
+    <string name="ad_thumbnail_description">Photo of the property at %1$s</string>
+</resources>

@@ -41,6 +41,37 @@ is the gate that proves the AGP 9 / Hilt / KSP combination compiles before any a
 
 ---
 
+## 2026-07-28 — Step 4: the XML list screen (first runnable app)
+
+**Delivered:** the Material 3 design system, the mandatory **XML list screen** (RecyclerView +
+ListAdapter + ViewBinding + Coil), its ViewModel, and the app shell with a launcher activity. The app
+now installs and runs: ads load, images load, tapping the heart favorites an ad and the card shows
+**"Favorited on <date>"**.
+
+### Verification
+
+| Command | Result |
+|---|---|
+| `./gradlew :feature:list:testDebugUnitTest` | **5 tests, 0 failures** |
+| `./gradlew lint testDebugUnitTest assembleDebug` | **BUILD SUCCESSFUL**, 28 tests total |
+| APK | `app/build/outputs/apk/debug/app-debug.apk`, 11 MB |
+
+### Found by building
+
+- **Coil 3.5.0 is compiled with Kotlin 2.4**, whose metadata AGP's built-in 2.2.10 compiler cannot
+  read (`can read versions up to 2.3.0`). Pinned to **Coil 3.4.0**. This is the first real cost of the
+  Kotlin ceiling in ADR-0001: the ecosystem has started shipping 2.4 artifacts, and KSP still caps us
+  at 2.3.10. Revisit when KSP ships 2.4.x.
+- **CI was red while the same commands passed locally**: Robolectric's Android SDK 36 sandbox
+  requires a Java 21 JVM, and the workflow ran Gradle on 17. CI now runs Gradle on **JDK 21** while
+  the build still *targets* 17 through the toolchain. A green local run genuinely did not mean a
+  green CI run.
+- `android:layout_marginHorizontal` is **API 26+** and minSdk is 24 — lint caught it and failed the
+  build. Replaced with start/end margins. Exactly the backwards-compatibility check ADR-0007 exists
+  to get.
+
+---
+
 ## 2026-07-28 — Step 3: Room cache, favorites and the repository
 
 **Delivered:** the `ads` + `favorites` tables, DAOs, entity mappers, `AdRepository` and its Hilt
