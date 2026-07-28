@@ -43,7 +43,7 @@ has a verification command that must pass before the next step starts.
 | 2 | `feat(data)` ✅ | Retrofit + serialization DTOs, mappers, fixtures wired as test resources | `./gradlew :core:data:testDebugUnitTest` ✅ 15 tests green |
 | 3 | `feat(data)` ✅ | Room cache + favorites DAO, `AdRepository` incl. the detail-merge strategy | `./gradlew :core:data:testDebugUnitTest` ✅ 23 tests green |
 | 4 | `feat(list)` ✅ | XML list screen, ViewModel, favorite toggle + date badge, loading/error/empty states | `./gradlew :feature:list:testDebugUnitTest` ✅ 5 tests green; APK runs |
-| 5 | `feat(detail)` | XML detail screen, `ViewPager2` gallery, merged detail, favorite FAB | `./gradlew :feature:detail:test` |
+| 5 | `feat(detail)` ✅ | XML detail screen, `ViewPager2` gallery, merged detail, favorite FAB | `./gradlew :feature:detail:testDebugUnitTest` ✅ 5 tests green |
 | 6 | `feat(favorites)` | Compose favorites screen + the detail screen's `ComposeView` component | `./gradlew testDebugUnitTest` |
 | 7 | `test` | Robolectric fragment/Compose tests, Espresso e2e (authored), Jacoco report | `./gradlew testDebugUnitTest jacocoTestReport` |
 | 8 | `ci` ✅ **pulled forward** | GitHub Actions: lint + unit tests + `assembleDebug`, reports **and the debug APK** uploaded as artifacts | workflow green on the PR |

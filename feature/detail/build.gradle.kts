@@ -5,3 +5,7 @@ plugins {
 android {
     namespace = "dev.mkaminski.idealista.feature.detail"
 }
+
+dependencies {
+    implementation(libs.androidx.viewpager2)
+}

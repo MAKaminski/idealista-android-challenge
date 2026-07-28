@@ -41,6 +41,40 @@ is the gate that proves the AGP 9 / Hilt / KSP combination compiles before any a
 
 ---
 
+## 2026-07-28 — Step 5: the XML detail screen
+
+**Delivered:** the second mandatory screen. Cards are now tappable: opening one shows a swipeable
+photo gallery, price, address, characteristics, energy certificate and the full description, with an
+extended FAB that favorites the ad and shows **"Favorited on <date>"**. Back returns to the list.
+
+### Verification
+
+| Command | Result |
+|---|---|
+| `./gradlew :feature:detail:testDebugUnitTest` | **5 tests, 0 failures** |
+| `./gradlew lint testDebugUnitTest assembleDebug` | **BUILD SUCCESSFUL**, 33 tests total |
+
+The ADR-0005 guard now exists at the screen level too:
+`opening ad 3 shows ad 3 identity not ad 1`.
+
+### A real bug, caught by its own test
+
+`retry re-subscribes after a failure` failed on the first run. The cause was `catch` sitting
+*outside* `flatMapLatest`: a failure completed the entire chain, so `retries` stopped being collected
+and the retry button could never re-subscribe — the error state was permanent until the screen was
+recreated. Moving `catch` inside the `flatMapLatest` fixed it. Nothing about the UI would have looked
+wrong; only the test found it.
+
+### Navigation
+
+Screen-to-screen wiring lives in `MainActivity` — the list exposes `onAdSelected`, the activity
+decides what to open — so neither feature module depends on the other (ADR-0002). The Navigation
+Component's SafeArgs plugin was skipped: its Gradle plugin marker is not resolvable for this AGP, and
+a single string argument does not justify a plugin. Arguments go through `SavedStateHandle`, so the
+detail screen survives process death.
+
+---
+
 ## 2026-07-28 — Step 4: the XML list screen (first runnable app)
 
 **Delivered:** the Material 3 design system, the mandatory **XML list screen** (RecyclerView +

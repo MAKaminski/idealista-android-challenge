@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="detail_title">Detalle de la vivienda</string>
+    <string name="detail_error">No hemos podido cargar esta vivienda.</string>
+    <string name="detail_retry">Reintentar</string>
+    <string name="detail_characteristics">Características</string>
+    <string name="detail_description">Descripción</string>
+    <string name="detail_energy">Certificado energético</string>
+    <string name="detail_energy_consumption">Consumo: %1$s</string>
+    <string name="detail_energy_emissions">Emisiones: %1$s</string>
+    <string name="detail_rooms">%1$d habitaciones</string>
+    <string name="detail_baths">%1$d baños</string>
+    <string name="detail_floor">Planta %1$s</string>
+    <string name="detail_lift">Ascensor</string>
+    <string name="detail_no_lift">Sin ascensor</string>
+    <string name="detail_community_costs">Gastos de comunidad %1$s</string>
+    <string name="detail_gallery_image">Foto %1$d de %2$d: %3$s</string>
+    <string name="detail_favorite_add">Añadir a favoritos</string>
+    <string name="detail_favorite_remove">Quitar de favoritos</string>
+    <string name="favorite_saved_on">Guardado el %1$s</string>
+</resources>

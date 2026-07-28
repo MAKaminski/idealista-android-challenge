@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="detail_title">Property detail</string>
+    <string name="detail_error">We couldn\'t load this property.</string>
+    <string name="detail_retry">Try again</string>
+    <string name="detail_characteristics">Characteristics</string>
+    <string name="detail_description">Description</string>
+    <string name="detail_energy">Energy certificate</string>
+    <string name="detail_energy_consumption">Consumption: %1$s</string>
+    <string name="detail_energy_emissions">Emissions: %1$s</string>
+    <string name="detail_rooms">%1$d rooms</string>
+    <string name="detail_baths">%1$d bathrooms</string>
+    <string name="detail_floor">Floor %1$s</string>
+    <string name="detail_lift">Lift</string>
+    <string name="detail_no_lift">No lift</string>
+    <string name="detail_community_costs">Community costs %1$s</string>
+    <string name="detail_gallery_image">Photo %1$d of %2$d: %3$s</string>
+    <string name="detail_favorite_add">Add to favorites</string>
+    <string name="detail_favorite_remove">Remove from favorites</string>
+    <string name="favorite_saved_on">Favorited on %1$s</string>
+</resources>
