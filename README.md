@@ -44,9 +44,12 @@ so in passing, and it is the trap in this challenge. It also uses a different id
 `String propertyCode`) and a different price shape than the list endpoint.
 
 Binding that response straight to the UI produces an app that looks perfect on ad 1 and silently
-shows the wrong price, address and location for ads 2–4. This app instead **merges**: identity comes
-from the cached list ad, rich content (characteristics, energy certificate, gallery, description)
-comes from the detail response, and two regression tests keep it that way.
+shows the wrong price, address, location **and photos** for ads 2–4. This app instead **merges**:
+identity — including the photo gallery — comes from the cached list ad, while characteristics, the
+energy certificate and the description come from the detail response.
+
+The photo half of that was a real bug, caught by a human looking at the app rather than by the suite;
+the fix and the alignment tests that now prevent it are in `docs/DELIVERY_LOG.md`.
 
 See [`docs/DECISIONS/ADR-0005-detail-merge-strategy.md`](docs/DECISIONS/ADR-0005-detail-merge-strategy.md).
 

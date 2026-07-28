@@ -111,10 +111,13 @@ The mock API is quirky by design. An agent that normalizes these away breaks the
 tables are in [`docs/API.md`](docs/API.md).
 
 1. **`detail.json` always returns the same payload** (ad 1) no matter which ad was opened. The
-   repository therefore **merges**: identity fields (id, address, district, price, operation,
-   thumbnail) come from the cached list ad; only rich fields (characteristics, energy certificate,
-   gallery, long comment) come from the detail response. The detail DTO's `adid`, `priceInfo` and
-   `ubication` are discarded on purpose.
+   repository therefore **merges**: identity — id, address, district, price, operation, thumbnail
+   **and the photo gallery** — comes from the cached list ad; only characteristics, the energy
+   certificate and the long comment come from the detail response. The detail DTO's `adid`,
+   `priceInfo`, `ubication` and `multimedia` are discarded on purpose.
+   **Photos are identity.** Each list ad carries its own `multimedia.images`; the response's images
+   are ad 1's rooms. Taking them from the response shipped the wrong flat's photos on three of four
+   ads — see ADR-0005 and the alignment tests before touching this.
 2. The id is a **`String` (`propertyCode`) in list** and an **`Int` (`adid`) in detail**; the price
    is `priceInfo.price.amount` in list but `priceInfo.amount` in detail. The two DTO hierarchies are
    separate — do not extract a "shared" DTO.
