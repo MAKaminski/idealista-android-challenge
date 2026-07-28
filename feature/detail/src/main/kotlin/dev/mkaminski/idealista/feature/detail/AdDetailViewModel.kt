@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.mkaminski.idealista.data.AdRepository
+import dev.mkaminski.idealista.data.translate.AdTextTranslator
+import dev.mkaminski.idealista.data.translate.CurrentLanguage
 import dev.mkaminski.idealista.model.AdDetail
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -13,19 +15,32 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 sealed interface AdDetailUiState {
     data object Loading : AdDetailUiState
-    data class Content(val detail: AdDetail) : AdDetailUiState
+
+    /**
+     * [translatedComment] is the description in the user's language, or `null` when it is already
+     * Spanish, still translating, or could not be translated. The screen falls back to the original
+     * in every one of those cases — the listing text never disappears.
+     */
+    data class Content(
+        val detail: AdDetail,
+        val translatedComment: String? = null,
+    ) : AdDetailUiState
+
     data class Error(val cause: Throwable) : AdDetailUiState
 }
 
 @HiltViewModel
 class AdDetailViewModel @Inject constructor(
     private val repository: AdRepository,
+    private val translator: AdTextTranslator,
+    private val language: CurrentLanguage,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -44,6 +59,16 @@ class AdDetailViewModel @Inject constructor(
             repository.observeAdDetail(propertyCode)
                 .map<AdDetail, AdDetailUiState> { AdDetailUiState.Content(it) }
                 .catch { emit(AdDetailUiState.Error(it)) }
+        }
+        // The description arrives in Spanish whatever the UI language is. Translating downstream of
+        // the content emission means the screen renders immediately and gains the translation when
+        // it is ready, rather than waiting on a model download to show anything at all.
+        .transformLatest { state ->
+            emit(state)
+            if (state !is AdDetailUiState.Content) return@transformLatest
+            val target = language() ?: return@transformLatest
+            val source = state.detail.comment.ifBlank { state.detail.ad.description }
+            translator.translate(source, target)?.let { emit(state.copy(translatedComment = it)) }
         }
         .stateIn(
             scope = viewModelScope,

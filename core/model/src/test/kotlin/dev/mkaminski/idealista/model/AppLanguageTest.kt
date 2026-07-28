@@ -10,7 +10,7 @@ class AppLanguageTest {
     @Test
     fun `every requested language ships`() {
         assertEquals(
-            listOf("en", "es", "fr", "pt", "it"),
+            listOf("en", "es", "fr", "pt", "it", "zh"),
             AppLanguage.entries.map { it.tag },
         )
     }
@@ -26,6 +26,9 @@ class AppLanguageTest {
         assertEquals(AppLanguage.SPANISH, AppLanguage.fromTag("es-419"))
         assertEquals(AppLanguage.SPANISH, AppLanguage.fromTag("es-ES"))
         assertEquals(AppLanguage.PORTUGUESE, AppLanguage.fromTag("pt-BR"))
+        // Chinese tags in the wild carry a script subtag far more often than not.
+        assertEquals(AppLanguage.CHINESE, AppLanguage.fromTag("zh-Hans-CN"))
+        assertEquals(AppLanguage.CHINESE, AppLanguage.fromTag("zh-TW"))
     }
 
     /** Some platforms hand back underscores rather than hyphens. */
@@ -59,6 +62,7 @@ class AppLanguageTest {
         assertEquals("Français", AppLanguage.FRENCH.endonym)
         assertEquals("Português", AppLanguage.PORTUGUESE.endonym)
         assertEquals("Italiano", AppLanguage.ITALIAN.endonym)
+        assertEquals("中文", AppLanguage.CHINESE.endonym)
         assertTrue(AppLanguage.entries.map { it.endonym }.toSet().size == AppLanguage.entries.size)
     }
 }

@@ -18,7 +18,7 @@ android {
         // in-app picker and the system screen then read the same list (ADR-0009).
         generateLocaleConfig = true
         // Declared explicitly so a stray transitive translation cannot silently join the picker.
-        localeFilters += listOf("en", "es", "fr", "pt", "it")
+        localeFilters += listOf("en", "es", "fr", "pt", "it", "zh")
     }
 }
 
@@ -56,6 +56,7 @@ dependencies {
     implementation(projects.feature.detail)
     implementation(projects.feature.favorites)
     implementation(projects.feature.list)
+    implementation(projects.feature.map)
     implementation(projects.feature.settings)
 
     implementation(libs.androidx.core.ktx)

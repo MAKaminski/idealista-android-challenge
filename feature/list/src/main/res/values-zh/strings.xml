@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_title">房源</string>
+    <string name="list_error">无法加载房源。</string>
+    <string name="list_retry">重试</string>
+    <string name="list_empty">暂无房源。</string>
+    <string name="list_summary">%1$d室 · %2$d卫 · %3$s</string>
+    <string name="favorite_saved_on">收藏于%1$s</string>
+    <string name="favorite_add">加入收藏</string>
+    <string name="favorite_remove">取消收藏</string>
+    <string name="ad_thumbnail_description">位于%1$s的房源照片</string>
+    <string name="filter_sale">出售</string>
+    <string name="filter_rent">出租</string>
+    <string name="filter_favorites">收藏</string>
+    <string name="filter_rooms">3室以上</string>
+    <string name="filter_baths">2卫以上</string>
+    <string name="filter_exterior">朝外</string>
+    <string name="filter_parking">车位</string>
+    <string name="filter_air_conditioning">空调</string>
+    <string name="filter_pool">泳池</string>
+    <string name="filter_terrace">露台</string>
+    <string name="filter_garden">花园</string>
+    <string name="filter_price_low">价格 ↑</string>
+    <string name="filter_clear">清除</string>
+    <plurals name="list_result_count">
+        <item quantity="other">%1$d套房源</item>
+    </plurals>
+    <string name="list_empty_filtered">没有符合筛选条件的房源。</string>
+</resources>

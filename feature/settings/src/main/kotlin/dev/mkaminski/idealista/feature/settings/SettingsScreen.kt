@@ -132,6 +132,7 @@ private fun AppLanguage.labelRes(): Int = when (this) {
     AppLanguage.FRENCH -> R.string.settings_language_french
     AppLanguage.PORTUGUESE -> R.string.settings_language_portuguese
     AppLanguage.ITALIAN -> R.string.settings_language_italian
+    AppLanguage.CHINESE -> R.string.settings_language_chinese
 }
 
 internal const val TAG_SETTINGS = "settings_screen"

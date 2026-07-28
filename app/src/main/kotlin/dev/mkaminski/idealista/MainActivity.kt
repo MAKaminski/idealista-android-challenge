@@ -15,6 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import dev.mkaminski.idealista.feature.detail.AdDetailFragment
 import dev.mkaminski.idealista.feature.favorites.FavoritesFragment
 import dev.mkaminski.idealista.feature.list.AdListFragment
+import dev.mkaminski.idealista.feature.map.MapFragment
 import dev.mkaminski.idealista.feature.settings.SettingsFragment
 
 /**
@@ -42,6 +43,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         bottomNav.setOnItemSelectedListener { item ->
             if (item.itemId == R.id.nav_favorites) {
                 showRoot(FavoritesFragment(), TAG_FAVORITES)
+            } else if (item.itemId == R.id.nav_map) {
+                showRoot(MapFragment().withNavigation(), TAG_MAP)
             } else if (item.itemId == R.id.nav_settings) {
                 showRoot(SettingsFragment(), TAG_SETTINGS)
             } else {
@@ -101,11 +104,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     /** Fragments survive rotation, so their navigation callbacks must be re-attached. */
     private fun reattachCallbacks() {
         (supportFragmentManager.findFragmentByTag(TAG_LIST) as? AdListFragment)?.withNavigation()
+        (supportFragmentManager.findFragmentByTag(TAG_MAP) as? MapFragment)?.withNavigation()
         (supportFragmentManager.findFragmentByTag(TAG_DETAIL) as? AdDetailFragment)?.withNavigation()
         updateChromeForBackStack()
     }
 
     private fun AdListFragment.withNavigation() = apply {
+        onAdSelected = { propertyCode -> openDetail(propertyCode) }
+    }
+
+    /** The map opens the same detail screen the list does — one destination, two ways in. */
+    private fun MapFragment.withNavigation() = apply {
         onAdSelected = { propertyCode -> openDetail(propertyCode) }
     }
 
@@ -117,6 +126,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         const val TAG_LIST = "list"
         const val TAG_DETAIL = "detail"
         const val TAG_FAVORITES = "favorites"
+        const val TAG_MAP = "map"
         const val TAG_SETTINGS = "settings"
     }
 }

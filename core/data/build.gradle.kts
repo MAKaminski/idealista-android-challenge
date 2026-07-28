@@ -40,6 +40,9 @@ dependencies {
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.converter.serialization)
 
+    // On-device translation of the ad text, which the API only ever sends in Spanish.
+    api(libs.mlkit.translate)
+
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)

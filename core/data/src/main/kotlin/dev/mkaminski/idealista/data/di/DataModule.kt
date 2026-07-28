@@ -9,6 +9,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dev.mkaminski.idealista.data.AdRepository
+import dev.mkaminski.idealista.data.translate.AdTextTranslator
+import dev.mkaminski.idealista.data.translate.MlKitAdTextTranslator
 import dev.mkaminski.idealista.data.DefaultAdRepository
 import dev.mkaminski.idealista.data.local.AdDao
 import dev.mkaminski.idealista.data.local.Converters
@@ -61,4 +63,8 @@ internal abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindAdRepository(impl: DefaultAdRepository): AdRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAdTextTranslator(impl: MlKitAdTextTranslator): AdTextTranslator
 }

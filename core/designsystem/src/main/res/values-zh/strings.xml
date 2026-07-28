@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accordion_expand">展开%1$s</string>
+    <string name="accordion_collapse">收起%1$s</string>
+    <string name="link_no_app">此设备上没有应用可以打开该链接。</string>
+</resources>

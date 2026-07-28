@@ -1,10 +1,11 @@
 # Testing
 
-**101 automated tests, all passing.** This document says which tiers were actually executed and which
+**122 automated tests, all passing.** This document says which tiers were actually executed and which
 were not — the distinction is kept honest rather than implied.
 
 ```bash
-./gradlew testDebugUnitTest        # every executable tier below (101 tests)
+./gradlew testDebugUnitTest        # every executable tier below (122 tests)
+./gradlew screenshots              # regenerate docs/screenshots — opt-in, writes into docs/
 ./gradlew :core:data:testDebugUnitTest --rerun-tasks   # one module, forced to re-run
 ./gradlew lint                     # Android lint
 ./gradlew connectedDebugAndroidTest   # Espresso — needs a device/emulator
@@ -20,18 +21,32 @@ green run indistinguishable from a run that executed nothing.
 | API contract | MockWebServer + the committed fixtures | `:core:data` | 6 | ✅ |
 | Mappers | JUnit | `:core:data` | 11 | ✅ |
 | Repository (+ Room) | Room in-memory + Robolectric + Turbine | `:core:data` | 10 | ✅ |
-| **Filter, link and language logic** | plain JUnit, no Android runtime | `:core:model` | 26 | ✅ |
+| **Filter, link, language and map-bounds logic** | plain JUnit, no Android runtime | `:core:model` | 38 | ✅ |
 | **Image alignment** | JUnit against the real `list.json` | `:feature:list` | 6 | ✅ |
 | Design system (accordion) | Robolectric | `:core:designsystem` | 6 | ✅ |
 | Design system (external links) | Robolectric + shadow intents | `:core:designsystem` | 3 | ✅ |
 | List ViewModel | coroutines-test + Turbine | `:feature:list` | 9 | ✅ |
 | Filter chip row | Robolectric | `:feature:list` | 8 | ✅ |
-| Detail ViewModel | coroutines-test + Turbine | `:feature:detail` | 5 | ✅ |
+| Detail ViewModel (incl. translation) | coroutines-test + Turbine | `:feature:detail` | 10 | ✅ |
+| Map ViewModel | coroutines-test + Turbine | `:feature:map` | 5 | ✅ |
 | Compose UI | `createComposeRule` under Robolectric | `:feature:favorites` | 4 | ✅ |
 | Language picker | `createComposeRule` under Robolectric | `:feature:settings` | 7 | ✅ |
 | End-to-end | Espresso + Hilt test runner | `:app` | 1 | ❌ **authored and compiling, not executed** |
 | Window insets | — | — | 0 | ❌ **not covered — see below** |
 | Applying a locale | — | — | 0 | ❌ **not testable — see below** |
+| ML Kit translation itself | — | — | 0 | ❌ **needs a device — see below** |
+| Screenshot rendering | Robolectric native graphics | 5 modules | 6 | ⚙️ opt-in, not part of the suite |
+
+`MlKitAdTextTranslator` is not unit-testable either: ML Kit downloads its models from Google's
+servers onto a real device, and there is none here. What *is* tested is everything around it — the
+detail ViewModel shows content while a translation is pending, falls back to the Spanish original
+when one cannot be produced, and asks for nothing at all when the app follows the system language.
+The ML Kit class is written and unrun, and this table says zero rather than omitting the row.
+
+The screenshot tests are **generators, not assertions**: they render the real screens to PNGs and
+write them into `docs/`. They are skipped unless `./gradlew screenshots` sets the opt-in flag, so an
+ordinary test run neither rewrites committed images nor reaches a CDN. They still exercise the real
+layouts and adapters, so a screen that stops inflating breaks them.
 
 `AppLocales.apply` is not unit-testable and the tests for it were **deleted rather than weakened**.
 On the API 33+ path `AppCompatDelegate.setApplicationLocales` forwards to the framework's

@@ -20,4 +20,6 @@ tasks.matching { it.name.contains("UnitTestJavaRes") }.configureEach {
 
 dependencies {
     testImplementation(libs.kotlinx.serialization.json)
+    // ComponentActivity: the screenshot renderer needs a ViewTree lifecycle owner to compose into.
+    testImplementation(libs.androidx.activity.compose)
 }

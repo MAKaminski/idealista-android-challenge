@@ -3,22 +3,15 @@ package dev.mkaminski.idealista.feature.detail
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.compose.ui.platform.ViewCompositionStrategy
-import com.google.android.material.chip.Chip
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import dev.mkaminski.idealista.designsystem.ExternalLinks
-import dev.mkaminski.idealista.designsystem.Formatters
-import dev.mkaminski.idealista.designsystem.IdealistaTheme
 import dev.mkaminski.idealista.feature.detail.databinding.FragmentAdDetailBinding
-import dev.mkaminski.idealista.model.AdDetail
-import dev.mkaminski.idealista.model.AdLinks
 import kotlinx.coroutines.launch
 
 /**
@@ -56,129 +49,6 @@ class AdDetailFragment : Fragment(R.layout.fragment_ad_detail) {
                 viewModel.uiState.collect { state -> binding.render(state, galleryAdapter) }
             }
         }
-    }
-
-    private fun FragmentAdDetailBinding.render(state: AdDetailUiState, gallery: GalleryAdapter) {
-        loading.visibility = if (state is AdDetailUiState.Loading) View.VISIBLE else View.GONE
-        errorState.visibility = if (state is AdDetailUiState.Error) View.VISIBLE else View.GONE
-        content.visibility = if (state is AdDetailUiState.Content) View.VISIBLE else View.GONE
-        favoriteFab.visibility = if (state is AdDetailUiState.Content) View.VISIBLE else View.GONE
-        appBar.visibility = if (state is AdDetailUiState.Content) View.VISIBLE else View.GONE
-
-        if (state !is AdDetailUiState.Content) return
-        bindContent(state.detail, gallery)
-    }
-
-    private fun FragmentAdDetailBinding.bindContent(detail: AdDetail, gallery: GalleryAdapter) {
-        val ad = detail.ad
-        val context = root.context
-
-        gallery.submitList(detail.gallery)
-        galleryIndicator.visibility =
-            if (detail.gallery.size > 1) View.VISIBLE else View.GONE
-
-        // External destinations. The photo and map links use data the API really provides; the
-        // listing URL is built from idealista's public URL shape and will not resolve for the mock
-        // property codes — see AdLinks.
-        toolbar.menu.findItem(R.id.action_open_listing)?.setOnMenuItemClickListener {
-            ExternalLinks.openInBrowser(context, AdLinks.listingUrl(ad.propertyCode))
-            true
-        }
-        openMap.setOnClickListener {
-            ExternalLinks.openExternally(
-                context,
-                AdLinks.mapUri(ad.latitude, ad.longitude, ad.address),
-            )
-        }
-
-        price.text = Formatters.price(ad.price, ad.currencySuffix)
-        address.text = ad.address
-        location.text = listOfNotNull(ad.district, ad.municipality).joinToString(", ")
-        description.text = detail.comment.ifBlank { ad.description }
-
-        // Section summaries: a collapsed accordion still says how much is inside it.
-        locationDetail.text = listOfNotNull(
-            ad.district,
-            ad.neighborhood,
-            ad.municipality,
-            ad.province,
-        ).distinct().joinToString(" · ")
-        locationSection.summary = ad.municipality
-
-        val featureLabels = buildList {
-            if (ad.features.hasAirConditioning) add(context.getString(R.string.detail_feature_air_conditioning))
-            if (ad.features.hasBoxRoom) add(context.getString(R.string.detail_feature_box_room))
-            if (ad.features.hasSwimmingPool) add(context.getString(R.string.detail_feature_pool))
-            if (ad.features.hasTerrace) add(context.getString(R.string.detail_feature_terrace))
-            if (ad.features.hasGarden) add(context.getString(R.string.detail_feature_garden))
-            if (ad.exterior) add(context.getString(R.string.detail_feature_exterior))
-            ad.parking?.let { parking ->
-                if (parking.hasParkingSpace) {
-                    add(
-                        context.getString(
-                            if (parking.includedInPrice) {
-                                R.string.detail_feature_parking_included
-                            } else {
-                                R.string.detail_feature_parking
-                            },
-                        ),
-                    )
-                }
-            }
-        }
-        features.removeAllViews()
-        featureLabels.forEach { label ->
-            features.addView(
-                Chip(context).apply {
-                    text = label
-                    isClickable = false
-                    isCheckable = false
-                },
-            )
-        }
-        featuresSection.summary =
-            if (featureLabels.isEmpty()) null else featureLabels.size.toString()
-        featuresSection.isVisible = featureLabels.isNotEmpty()
-
-        val favoritedAt = ad.favoritedAt
-        if (favoritedAt != null) {
-            favoritedOn.text = context.getString(
-                R.string.favorite_saved_on,
-                Formatters.favoritedDate(favoritedAt),
-            )
-            favoritedOn.visibility = View.VISIBLE
-            favoriteFab.setText(R.string.detail_favorite_remove)
-            favoriteFab.setIconResource(
-                dev.mkaminski.idealista.designsystem.R.drawable.ic_favorite_filled,
-            )
-        } else {
-            favoritedOn.visibility = View.GONE
-            favoriteFab.setText(R.string.detail_favorite_add)
-            favoriteFab.setIconResource(dev.mkaminski.idealista.designsystem.R.drawable.ic_favorite)
-        }
-
-        // The characteristics panel is Compose inside this XML screen (ADR-0006). Labels are built
-        // here so formatting and string lookup stay out of the composable.
-        val labels = characteristicLabels(
-            characteristics = detail.characteristics,
-            roomsLabel = { context.getString(R.string.detail_rooms, it) },
-            bathsLabel = { context.getString(R.string.detail_baths, it) },
-            areaLabel = { Formatters.area(it.toDouble()) },
-            floorLabel = { context.getString(R.string.detail_floor, it) },
-            liftLabel = { context.getString(if (it) R.string.detail_lift else R.string.detail_no_lift) },
-            communityCostsLabel = {
-                context.getString(R.string.detail_community_costs, Formatters.price(it, ad.currencySuffix))
-            },
-        )
-        characteristics.setViewCompositionStrategy(
-            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
-        )
-        characteristics.setContent {
-            IdealistaTheme {
-                CharacteristicsPanel(labels = labels, certificate = detail.energyCertificate)
-            }
-        }
-        characteristicsSection.summary = labels.size.toString()
     }
 
     override fun onDestroyView() {

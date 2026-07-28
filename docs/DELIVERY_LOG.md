@@ -41,6 +41,90 @@ is the gate that proves the AGP 9 / Hilt / KSP combination compiles before any a
 
 ---
 
+## 2026-07-28 — A map, Chinese, translated listings, and a README with screenshots
+
+Four asks: a map tab, Chinese as a sixth language, translation of the ad text itself, and a README
+that explains the app with screenshots and separates *what was asked for* from *what we added*.
+
+### Screenshots without an emulator
+
+The README needed screenshots and this container has no device. Rather than ship none,
+`./gradlew screenshots` rasterises the real screens offscreen through Robolectric's **native
+graphics** backend — the real layouts, the real adapters, the real theme, and the real listing
+photos fetched into a build directory and served to Coil keyed by URL.
+
+Keyed by URL on purpose: every ad shows *its own* photo, so a screenshot would visibly expose the
+ad-1-everywhere bug ADR-0005 exists to prevent.
+
+Three things had to be true before a pixel appeared, and each was found by looking at the output
+rather than by reasoning about it:
+
+| Symptom | Cause |
+|---|---|
+| `ViewTreeLifecycleOwner not found` | A plain `Activity` is not a `LifecycleOwner`; Compose needs `ComponentActivity` |
+| Every photo a grey placeholder | Coil suspends until its target view is **attached to a window**. The harness rendered a detached hierarchy |
+| Photos still placeholders | A `RecyclerView` binds its rows during the *first* layout pass, which is when the image requests are issued — so the capture needs a second pass with an idle between |
+
+Generation is opt-in: an ordinary `testDebugUnitTest` skips it, so CI neither rewrites committed
+images nor depends on a CDN.
+
+### The map
+
+osmdroid over OpenStreetMap tiles, not the Google Maps SDK — a Maps key is a secret, and a
+submission should carry none (ADR-0010). It is a real pannable, zoomable map with a pin per ad; a pin
+raises a card and the card opens the same detail screen the list opens, through the host's callback,
+so `:feature:map` does not know `:feature:detail` exists.
+
+The map reads the **same Room cache** the list does, so it costs no extra request and a favorite
+toggled on the list is already true here.
+
+`MapBounds` lives in `:core:model` as pure geometry. Ads without coordinates are filtered out rather
+than defaulted: `(0, 0)` is in the Gulf of Guinea, and a single such pin would zoom the map out to
+include Africa. There is a test named after that.
+
+### Translated listings
+
+Reported with a screenshot: an English UI wrapped around three thousand characters of Spanish. Fair
+— localizing the chrome and leaving the content is the worse of the two bugs, because it looks
+finished.
+
+The tempting fix was to bundle hand-written translations of the four mock ads. Rejected: that is a
+translation of *this fixture*, not a capability, and ~80 000 characters of generated prose in
+`values-*/` would imply the app can translate when it cannot. ML Kit on-device translation was
+chosen instead — no API key, offline after the first model download, and it works on whatever the
+API sends (ADR-0011).
+
+Three properties matter more than the translation: the screen renders the original **first** and
+gains the translation when it arrives (a first-run model download is ~30 MB — a blank description for
+that long would be a worse bug than the one being fixed); every failure path falls back to the
+Spanish; and a translation is labelled as one.
+
+### Chinese
+
+A sixth language across all seven modules. Worth noting that `zh-Hans-CN` and `zh-TW` both had to
+resolve to Chinese — Chinese tags carry a script subtag far more often than not — which the existing
+primary-subtag matching already handled, now pinned by a test.
+
+### Verification
+
+| Command | Result |
+|---|---|
+| `./gradlew lint testDebugUnitTest assembleDebug` | **BUILD SUCCESSFUL** |
+| Test count | **122** (was 101) |
+| `./gradlew screenshots` | five PNGs in `docs/screenshots`, rendered from the real layouts |
+
+### Not verified
+
+**The ML Kit translator has never run.** Its models download onto a real device and there is none
+here. Everything around it is tested against a fake — content shows while a translation is pending, a
+failure falls back to the original, following the system language asks for nothing — but the ML Kit
+class itself is written and unrun, and `TESTING.md` carries a row that says zero.
+
+**The map screen is not screenshotted.** osmdroid fetches tiles at runtime, so offscreen it renders
+an empty grid. A picture of an empty grid is worse than no picture, so the README says why instead.
+
+---
+
 ## 2026-07-28 — A settings screen, and the app in five languages
 
 *"Add a language selector under a settings area, allow the user to at least select: Spanish, French,

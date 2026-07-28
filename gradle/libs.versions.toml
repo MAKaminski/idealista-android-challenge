@@ -1,4 +1,6 @@
 [versions]
+osmdroid = "6.1.20"
+mlkitTranslate = "17.0.3"
 # Toolchain — see docs/DECISIONS/ADR-0001-toolchain.md before changing any of these.
 # AGP 9's built-in Kotlin support compiles Android modules and manages the Kotlin version (2.2.10);
 # AGP's own POM pins the matching KSP (2.2.10-2.0.2). `kotlin` below exists only so non-Android
@@ -40,6 +42,10 @@ activityCompose = "1.13.0"
 browser = "1.10.0"
 
 [libraries]
+# OpenStreetMap tiles: a real pannable map with no API key, so the submission carries no secret.
+# On-device translation: no API key, and it works offline once the model is downloaded.
+mlkit-translate = { group = "com.google.mlkit", name = "translate", version.ref = "mlkitTranslate" }
+osmdroid = { group = "org.osmdroid", name = "osmdroid-android", version.ref = "osmdroid" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }

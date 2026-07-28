@@ -18,4 +18,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui)
+
+    // ComponentActivity: the screenshot renderer needs a ViewTree lifecycle owner.
+    testImplementation(libs.androidx.activity.compose)
 }

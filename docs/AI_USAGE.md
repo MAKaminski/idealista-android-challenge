@@ -165,6 +165,27 @@ than assume, one string was deleted from `values-fr` and lint run: it failed wit
 key, and went green again when restored. Five languages is precisely the surface that rots quietly,
 and "lint probably covers it" is not evidence.
 
+## Session 9 — map, translation, Chinese, README (2026-07-28)
+
+### What was corrected by hand
+
+| Correction | Why |
+|---|---|
+| The AI's first instinct for translation was to bundle hand-written translations of the four mock ads | That translates *this fixture*, not the app. ~80 000 characters of generated prose in `values-*/` would have implied a capability the app did not have. Replaced with on-device ML Kit, which works on whatever the API sends |
+| A `LazyColumn` for the six-row settings list | Broke four tests on rows below the fold and — worse — broke `selectableGroup`, so a screen reader saw six unrelated radios instead of one group. The test failure was the symptom; the container was the bug |
+| A vacuous assertion in a new test | `assertEquals("3", x.propertyCode.let { "3" })` — always true. Caught on re-reading the diff, not by the suite, which is exactly the kind of test that inflates a count without testing anything |
+| Screenshots that were silently photo-less | The first harness rendered a detached view hierarchy, so Coil never resolved and every photo came out grey. The build was green throughout. Found by opening the PNG |
+
+### The recurring lesson, in its clearest form yet
+
+The screenshot harness went green on the first run and produced images with no photographs in them.
+Nothing failed; a build cannot tell you that a picture is wrong. Three rounds of *look at the actual
+output* fixed it — a missing lifecycle owner, a detached hierarchy, and a layout pass issued after
+the capture.
+
+That is the same failure mode as the ad-1 photos bug from session 6, and the same fix: run it and
+look, rather than reading the code and agreeing with it.
+
 ### Honest assessment of the AI's contribution
 
 It wrote nearly all of the code and most of the prose, and it was fast at both. It was also wrong

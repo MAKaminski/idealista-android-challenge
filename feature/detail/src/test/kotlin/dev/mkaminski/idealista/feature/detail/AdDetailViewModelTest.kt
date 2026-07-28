@@ -3,11 +3,15 @@ package dev.mkaminski.idealista.feature.detail
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import dev.mkaminski.idealista.data.AdRepository
+import dev.mkaminski.idealista.data.translate.AdTextTranslator
+import dev.mkaminski.idealista.data.translate.CurrentLanguage
+import dev.mkaminski.idealista.model.AppLanguage
 import dev.mkaminski.idealista.model.Ad
 import dev.mkaminski.idealista.model.AdCharacteristics
 import dev.mkaminski.idealista.model.AdDetail
 import dev.mkaminski.idealista.model.AdFeatures
 import dev.mkaminski.idealista.model.Operation
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -73,12 +77,105 @@ class AdDetailViewModelTest {
     @After
     fun tearDown() = Dispatchers.resetMain()
 
-    private fun viewModel(propertyCode: String) = AdDetailViewModel(
+    /** Returns a fixed string so a test can tell a translated screen from an untranslated one. */
+    private class FakeTranslator(private val result: String? = null) : AdTextTranslator {
+        val requested = mutableListOf<Pair<String, AppLanguage>>()
+
+        override suspend fun translate(text: String, target: AppLanguage): String? {
+            requested += text to target
+            return result
+        }
+    }
+
+    private fun viewModel(
+        propertyCode: String,
+        translator: AdTextTranslator = FakeTranslator(),
+        language: AppLanguage? = null,
+    ) = AdDetailViewModel(
         repository = repository,
+        translator = translator,
+        language = CurrentLanguage { language },
         savedStateHandle = SavedStateHandle(
             mapOf(AdDetailViewModel.ARG_PROPERTY_CODE to propertyCode),
         ),
     )
+
+    // --- translation ------------------------------------------------------------------------
+    // The API writes Spanish whatever the UI language is, so the description is translated
+    // downstream of the content emission (ADR-0011).
+
+    @Test
+    fun `the description is replaced by its translation when one arrives`() = runTest {
+        val translator = FakeTranslator("An exclusive flat in Salamanca.")
+
+        viewModel("1", translator, AppLanguage.ENGLISH).uiState.test {
+            val state = expectMostRecentItem() as AdDetailUiState.Content
+            assertEquals("An exclusive flat in Salamanca.", state.translatedComment)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    /**
+     * The screen must render before the translation lands — the first use of a language downloads a
+     * ~30 MB model, and a blank description for that long is not acceptable. Asserted with a
+     * translator that is still working: the content is already there, without it.
+     */
+    @Test
+    fun `content is shown while the translation is still pending`() = runTest {
+        val pending = CompletableDeferred<String?>()
+        val translator = object : AdTextTranslator {
+            override suspend fun translate(text: String, target: AppLanguage) = pending.await()
+        }
+
+        viewModel("1", translator, AppLanguage.ENGLISH).uiState.test {
+            val whilePending = expectMostRecentItem() as AdDetailUiState.Content
+            assertNull(whilePending.translatedComment)
+            // The point of the test: real content, fully bound, with the translation still running.
+            assertEquals("1", whilePending.detail.ad.propertyCode)
+            assertTrue(whilePending.detail.comment.isNotBlank())
+
+            pending.complete("An exclusive flat in Salamanca.")
+
+            val afterwards = awaitItem() as AdDetailUiState.Content
+            assertEquals("An exclusive flat in Salamanca.", afterwards.translatedComment)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    /** A failed or unavailable translation leaves the listing readable in Spanish. */
+    @Test
+    fun `a translation that cannot be produced leaves the original in place`() = runTest {
+        viewModel("1", FakeTranslator(result = null), AppLanguage.ENGLISH).uiState.test {
+            val state = expectMostRecentItem() as AdDetailUiState.Content
+            assertNull(state.translatedComment)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `following the system language asks for no translation at all`() = runTest {
+        val translator = FakeTranslator("translated")
+
+        viewModel("1", translator, language = null).uiState.test {
+            expectMostRecentItem()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        assertEquals(emptyList<Pair<String, AppLanguage>>(), translator.requested)
+    }
+
+    @Test
+    fun `the text handed to the translator is the listing comment`() = runTest {
+        val translator = FakeTranslator("translated")
+
+        viewModel("3", translator, AppLanguage.CHINESE).uiState.test {
+            expectMostRecentItem()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        assertEquals(AppLanguage.CHINESE, translator.requested.single().second)
+        assertTrue(translator.requested.single().first.isNotBlank())
+    }
 
     /**
      * The screen-level half of the ADR-0005 guard: the detail payload always describes ad 1, so

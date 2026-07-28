@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="map_title">Mapa</string>
+    <string name="map_empty">Todavía no hay viviendas que situar en el mapa.</string>
+    <string name="map_selection_summary">%1$d hab. · %2$d baños · %3$s</string>
+    <plurals name="map_pin_count">
+        <item quantity="one">%1$d vivienda en el mapa</item>
+        <item quantity="other">%1$d viviendas en el mapa</item>
+    </plurals>
+</resources>

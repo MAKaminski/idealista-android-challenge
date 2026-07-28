@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="detail_title">房源详情</string>
+    <string name="detail_error">无法加载该房源。</string>
+    <string name="detail_retry">重试</string>
+    <string name="detail_characteristics">房屋参数</string>
+    <string name="detail_description">房源描述</string>
+    <string name="detail_energy">能源证书</string>
+    <string name="detail_energy_consumption">能耗：%1$s</string>
+    <string name="detail_energy_emissions">排放：%1$s</string>
+    <string name="detail_rooms">%1$d室</string>
+    <string name="detail_baths">%1$d卫</string>
+    <string name="detail_floor">%1$s层</string>
+    <string name="detail_lift">有电梯</string>
+    <string name="detail_no_lift">无电梯</string>
+    <string name="detail_community_costs">物业费%1$s</string>
+    <string name="detail_gallery_image">第%1$d张，共%2$d张：%3$s</string>
+    <string name="detail_favorite_add">加入收藏</string>
+    <string name="detail_favorite_remove">取消收藏</string>
+    <string name="favorite_saved_on">收藏于%1$s</string>
+    <string name="detail_features">配套与设施</string>
+    <string name="detail_location">位置</string>
+    <string name="detail_feature_air_conditioning">空调</string>
+    <string name="detail_feature_box_room">储藏室</string>
+    <string name="detail_feature_pool">泳池</string>
+    <string name="detail_feature_terrace">露台</string>
+    <string name="detail_feature_garden">花园</string>
+    <string name="detail_feature_parking">车位</string>
+    <string name="detail_feature_parking_included">含车位</string>
+    <string name="detail_feature_exterior">朝外</string>
+    <string name="detail_no_features">该房源未列出额外配套。</string>
+    <string name="detail_section_count">%1$d</string>
+    <string name="detail_open_listing">在 idealista 上打开</string>
+    <string name="detail_open_map">在地图中打开</string>
+    <string name="detail_photo_open">在浏览器中打开第%1$d张照片</string>
+    <string name="detail_translated_note">译自西班牙语</string>
+</resources>

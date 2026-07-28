@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="map_title">Carte</string>
+    <string name="map_empty">Aucun logement à situer sur la carte pour l\'instant.</string>
+    <string name="map_selection_summary">%1$d pièces · %2$d SdB · %3$s</string>
+    <plurals name="map_pin_count">
+        <item quantity="one">%1$d logement sur la carte</item>
+        <item quantity="other">%1$d logements sur la carte</item>
+    </plurals>
+</resources>

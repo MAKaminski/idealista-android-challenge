@@ -3,4 +3,5 @@
     <string name="nav_properties">Immobili</string>
     <string name="nav_favorites">Preferiti</string>
     <string name="nav_settings">Impostazioni</string>
+    <string name="nav_map">Mappa</string>
 </resources>

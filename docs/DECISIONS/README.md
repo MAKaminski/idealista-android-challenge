@@ -14,3 +14,5 @@ Format: context → decision → consequences, including the costs we accepted.
 | [0007](ADR-0007-minsdk-desugaring.md) | minSdk 24 with core library desugaring for `java.time` | Accepted |
 | [0008](ADR-0008-filters-and-external-links.md) | Client-side filters scoped to the list payload; Custom Tabs for external links | Accepted |
 | [0009](ADR-0009-per-app-language.md) | Per-app language through `AppCompatDelegate`, with no private preference | Accepted |
+| [0010](ADR-0010-map.md) | OpenStreetMap tiles via osmdroid rather than a keyed Maps SDK | Accepted |
+| [0011](ADR-0011-content-translation.md) | On-device translation of ad text, original as the fallback | Accepted |

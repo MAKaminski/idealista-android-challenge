@@ -15,6 +15,7 @@ enum class AppLanguage(val tag: String, val endonym: String) {
     FRENCH("fr", "Français"),
     PORTUGUESE("pt", "Português"),
     ITALIAN("it", "Italiano"),
+    CHINESE("zh", "中文"),
     ;
 
     companion object {

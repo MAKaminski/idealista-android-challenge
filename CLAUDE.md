@@ -24,8 +24,8 @@ requirement for a bonus.
 | Phase | State |
 |---|---|
 | Steps 1–9 — build, data, both XML screens, Compose, tests, CI, docs | ✅ **complete** |
-| Beyond the brief — accordions, filters, external links, edge-to-edge insets, five languages | ✅ **complete** |
-| Verification | `lint testDebugUnitTest assembleDebug` green · **101 tests** |
+| Beyond the brief — accordions, filters, links, insets, six languages, map, translation | ✅ **complete** |
+| Verification | `lint testDebugUnitTest assembleDebug` green · **122 tests** |
 
 The app is feature-complete against the brief. Two things are not covered by an executed test: the
 Espresso end-to-end test (authored and compiling, needs a device) and the window-insets fix (needs a
@@ -102,6 +102,7 @@ levels live in `build-logic`'s `Sdk` object and module scripts only set their `n
 :feature:list         XML list screen
 :feature:detail       XML detail screen (+ an embedded ComposeView characteristics panel)
 :feature:favorites    Compose-only screen
+:feature:map          XML map screen — osmdroid over OpenStreetMap tiles
 :feature:settings     Compose-only settings screen — the language picker
 ```
 
@@ -143,8 +144,8 @@ tables are in [`docs/API.md`](docs/API.md).
   callback (`onAdSelected`) and the host decides what to open, so features stay independent.
   Arguments travel as fragment arguments and are read through `SavedStateHandle`, which also gets
   process-death survival. SafeArgs is deliberately not used (see the delivery log for step 5).
-- All user-facing text in `strings.xml`, in **five** locales: `values/` (en), `values-es/`,
-  `values-fr/`, `values-pt/`, `values-it/`. No hardcoded strings in layouts or code. A string added
+- All user-facing text in `strings.xml`, in **six** locales: `values/` (en), `values-es/`,
+  `values-fr/`, `values-pt/`, `values-it/`, `values-zh/`. No hardcoded strings in layouts or code. A string added
   to one locale and not the rest fails `lint` on `MissingTranslation` — translate all five, and add
   the new module's folders too if you create one.
 - The in-app language is the **platform's** per-app locale via `AppLocales`/`AppCompatDelegate`.
@@ -161,6 +162,14 @@ tables are in [`docs/API.md`](docs/API.md).
   (`AdFilters`, `Ad.matches`, `applyFilters`). Only offer a filter the **list** payload can answer —
   detail-only fields describe ad 1 for every ad (see §6), so a filter over them is a lie. The chip
   row is rebuilt from state on every emission; do not mutate chips in place.
+- Ad **content** (descriptions, comments) arrives in Spanish whatever the UI language is. It is
+  translated on-device through `AdTextTranslator`, downstream of the content emission so the screen
+  never waits, and every failure path falls back to the original (ADR-0011). Never block a render on
+  a translation, and never show a translation without saying it is one.
+- The map is osmdroid over OpenStreetMap — **no API key anywhere in this repo**. Ads without
+  coordinates are filtered out, never defaulted to `(0, 0)` (ADR-0010).
+- Screenshots are generated, not captured: `./gradlew screenshots` renders the real screens offscreen
+  into `docs/screenshots`. Never hand-edit those PNGs.
 - External destinations go through `ExternalLinks` (Custom Tabs, `ACTION_VIEW` fallback, Toast when
   nothing handles it). Never `startActivity` a URL directly from a fragment.
 

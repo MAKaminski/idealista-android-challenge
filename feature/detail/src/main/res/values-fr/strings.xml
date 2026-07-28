@@ -33,4 +33,5 @@
     <string name="detail_open_listing">Ouvrir sur idealista</string>
     <string name="detail_open_map">Ouvrir dans Maps</string>
     <string name="detail_photo_open">Ouvrir la photo %1$d dans le navigateur</string>
+    <string name="detail_translated_note">Traduit de l\'espagnol</string>
 </resources>
