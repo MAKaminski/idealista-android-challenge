@@ -41,6 +41,39 @@ is the gate that proves the AGP 9 / Hilt / KSP combination compiles before any a
 
 ---
 
+## 2026-07-28 — Step 3: Room cache, favorites and the repository
+
+**Delivered:** the `ads` + `favorites` tables, DAOs, entity mappers, `AdRepository` and its Hilt
+wiring. Both behaviours the challenge actually grades — favoriting an ad, and showing the **date** it
+was favorited — now work end to end below the UI.
+
+### Verification
+
+| Command | Result |
+|---|---|
+| `./gradlew :core:data:testDebugUnitTest` | **23 tests, 0 failures** (8 repository, 9 mapper, 6 contract) |
+| `./gradlew lint testDebugUnitTest assembleDebug` | **BUILD SUCCESSFUL** |
+| Room schema export | `core/data/schemas/…IdealistaDatabase/1.json` |
+
+Both load-bearing tests from `TESTING.md` now exist and pass at the repository level:
+`favoriting an ad surfaces the same date on the list and the detail`, and
+`detail for ad 3 shows ad 3 identity not ad 1`.
+
+Favorites live in their own table, so `a refresh does not clear existing favorites` — a cache refresh
+can never drop what the user saved.
+
+### Found by building
+
+- **Robolectric 4.16.1 has no API 37 runtime.** Every Robolectric test failed with
+  `targetSdkVersion=37 > maxSdkVersion=36`. Pinned via `robolectric.properties` (`sdk=36`) with a note
+  to raise it when Robolectric catches up — the same "one release ahead" tax as the KSP flag.
+- **A `TestDispatcher` built in `@Before` carries its own scheduler**, and mixing it with the one
+  `runTest` creates makes every dispatch throw `DispatchException` — six tests failed on this before
+  the cause was clear. The fixture now injects `Dispatchers.Unconfined`.
+- Turbine's coordinates are `app.cash.turbine:turbine`, not `app.cash:turbine`.
+
+---
+
 ## 2026-07-28 — Step 2: network layer, mappers and contract tests
 
 **Delivered:** `:core:model` domain types, and in `:core:data` the two DTO hierarchies, the mappers
