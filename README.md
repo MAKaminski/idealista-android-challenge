@@ -1,7 +1,7 @@
 # idealista Android challenge — submission
 
 An Android app for browsing property ads: a list screen, a detail screen, and favorites that show the
-date each ad was saved. Kotlin, XML views, multi-module, 37 tests, CI.
+date each ad was saved. Kotlin, XML views, multi-module, 53 tests, CI.
 
 The original brief is preserved verbatim at the bottom of this file.
 
@@ -9,7 +9,7 @@ The original brief is preserved verbatim at the bottom of this file.
 
 ```bash
 ./gradlew runDebug              # build, install AND launch on a running emulator/device
-./gradlew testDebugUnitTest     # 37 tests
+./gradlew testDebugUnitTest     # 53 tests
 ./gradlew lint assembleDebug
 ```
 
@@ -32,7 +32,7 @@ also publishes a debug APK as an artifact, so the app can be sideloaded without 
 | **Favorite an ad** | ✅ | `favorites` table + `AdRepository.toggleFavorite` |
 | **Show the favorited date** | ✅ | On the list card, the detail screen and the favorites screen — one source, three surfaces |
 | **Use AI tools** | ✅ | [`docs/AI_USAGE.md`](docs/AI_USAGE.md) — including what the AI got *wrong* |
-| *Bonus* — tests | ✅ | 37 automated tests, [`docs/TESTING.md`](docs/TESTING.md) |
+| *Bonus* — tests | ✅ | 53 automated tests, including image-to-ad alignment, [`docs/TESTING.md`](docs/TESTING.md) |
 | *Bonus* — Compose alongside XML | ✅ | A Compose-only favorites screen **and** a `ComposeView` inside the XML detail screen |
 | *Bonus* — persistent storage | ✅ | Room: ad cache + favorites, survives restarts and offline |
 | *Bonus* — AI context files | ✅ | [`CLAUDE.md`](CLAUDE.md) |

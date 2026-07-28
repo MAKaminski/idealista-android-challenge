@@ -88,6 +88,28 @@ class AdMappersTest {
         assertFalse(ad.isFavorite)
     }
 
+    /** Photos are identity: the detail payload always carries ad 1's rooms. */
+    @Test
+    fun `the merged gallery is the opened ad's photos not the response's`() {
+        val adThree = listAds().first { it.propertyCode == "3" }.toDomain()
+
+        val detail = detailDto().toDomain(listAd = adThree)
+
+        assertEquals(adThree.images.map { it.url }, detail.gallery.map { it.url })
+        val responseUrls = detailDto().multimedia?.images.orEmpty().map { it.url }
+        detail.gallery.forEach { image -> assertFalse(image.url in responseUrls) }
+    }
+
+    @Test
+    fun `an ad with no photos of its own falls back to the response gallery`() {
+        val adWithoutImages = listAds().first { it.propertyCode == "3" }.toDomain()
+            .copy(images = emptyList())
+
+        val detail = detailDto().toDomain(listAd = adWithoutImages)
+
+        assertEquals(10, detail.gallery.size)
+    }
+
     @Test
     fun `detail maps characteristics energy certificate and gallery`() {
         val listAd = listAds().first { it.propertyCode == "1" }.toDomain()
@@ -99,8 +121,8 @@ class AdMappersTest {
         assertEquals(330.0, detail.characteristics.communityCosts!!, 0.0)
         assertEquals(Instant.ofEpochMilli(1_727_683_968_000), detail.characteristics.modificationDate)
         assertEquals("e", detail.energyCertificate?.consumptionType)
-        assertEquals(10, detail.gallery.size)
-        assertEquals("Salón", detail.gallery.first().localizedName)
+        // The gallery now comes from ad 1's own list entry, which carries 10 photos too.
+        assertEquals(listAds().first { it.propertyCode == "1" }.toDomain().images.size, detail.gallery.size)
         assertTrue(detail.comment.isNotBlank())
     }
 

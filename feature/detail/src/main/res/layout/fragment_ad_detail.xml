@@ -98,35 +98,65 @@
                 tools:text="Favorited on 28 Jul 2026"
                 tools:visibility="visible" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="@string/detail_characteristics"
-                android:textAppearance="?attr/textAppearanceTitleMedium" />
-
-            <!-- Compose embedded in an XML screen — the interop half of ADR-0006. -->
-            <androidx.compose.ui.platform.ComposeView
-                android:id="@+id/characteristics"
+            <dev.mkaminski.idealista.designsystem.AccordionSection
+                android:id="@+id/characteristicsSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp" />
+                android:layout_marginTop="16dp"
+                app:accordionExpanded="true"
+                app:accordionTitle="@string/detail_characteristics">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="@string/detail_description"
-                android:textAppearance="?attr/textAppearanceTitleMedium" />
+                <!-- Compose embedded in an XML screen — the interop half of ADR-0006. -->
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/characteristics"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </dev.mkaminski.idealista.designsystem.AccordionSection>
 
-            <TextView
-                android:id="@+id/description"
+            <dev.mkaminski.idealista.designsystem.AccordionSection
+                android:id="@+id/featuresSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:lineSpacingMultiplier="1.2"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                tools:text="Venta. Piso en exclusiva…" />
+                app:accordionExpanded="false"
+                app:accordionTitle="@string/detail_features">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/features"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </dev.mkaminski.idealista.designsystem.AccordionSection>
+
+            <dev.mkaminski.idealista.designsystem.AccordionSection
+                android:id="@+id/locationSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:accordionExpanded="false"
+                app:accordionTitle="@string/detail_location">
+
+                <TextView
+                    android:id="@+id/locationDetail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    tools:text="Barrio de Salamanca · Madrid · 40.436, -3.683" />
+            </dev.mkaminski.idealista.designsystem.AccordionSection>
+
+            <dev.mkaminski.idealista.designsystem.AccordionSection
+                android:id="@+id/descriptionSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:accordionExpanded="false"
+                app:accordionTitle="@string/detail_description">
+
+                <TextView
+                    android:id="@+id/description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingMultiplier="1.2"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    tools:text="Venta. Piso en exclusiva…" />
+            </dev.mkaminski.idealista.designsystem.AccordionSection>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

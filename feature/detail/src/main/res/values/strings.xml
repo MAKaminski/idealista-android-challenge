@@ -18,4 +18,16 @@
     <string name="detail_favorite_add">Add to favorites</string>
     <string name="detail_favorite_remove">Remove from favorites</string>
     <string name="favorite_saved_on">Favorited on %1$s</string>
+    <string name="detail_features">Features and extras</string>
+    <string name="detail_location">Location</string>
+    <string name="detail_feature_air_conditioning">Air conditioning</string>
+    <string name="detail_feature_box_room">Box room</string>
+    <string name="detail_feature_pool">Swimming pool</string>
+    <string name="detail_feature_terrace">Terrace</string>
+    <string name="detail_feature_garden">Garden</string>
+    <string name="detail_feature_parking">Parking</string>
+    <string name="detail_feature_parking_included">Parking included</string>
+    <string name="detail_feature_exterior">Exterior</string>
+    <string name="detail_no_features">Nothing extra listed for this property.</string>
+    <string name="detail_section_count">%1$d</string>
 </resources>

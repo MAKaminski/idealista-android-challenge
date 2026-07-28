@@ -24,7 +24,7 @@ requirement for a bonus.
 | Phase | State |
 |---|---|
 | Steps 1–9 — build, data, both XML screens, Compose, tests, CI, docs | ✅ **complete** |
-| Verification | `lint testDebugUnitTest assembleDebug` green · **37 tests** |
+| Verification | `lint testDebugUnitTest assembleDebug` green · **53 tests** |
 
 The app is feature-complete against the brief. The one thing not executed anywhere is the Espresso
 end-to-end test — authored and compiling, but it needs a device (see `docs/TESTING.md`).
@@ -145,7 +145,9 @@ Two regression tests are load-bearing and must never be deleted:
 
 - favoriting an ad surfaces the same date on **both** the list and the detail screen;
 - opening ad 3's detail never renders ad 1's identity (the merge-strategy guard) — pinned twice, in
-  `:core:data` and in `:feature:detail`.
+  `:core:data` and in `:feature:detail`;
+- every photo shown belongs to the ad it appears under — the detail gallery comes from the **cached
+  ad**, never from the response, whose images are always ad 1's.
 
 ## 9. Definition of done
 

@@ -1,10 +1,10 @@
 # Testing
 
-**37 automated tests, all passing.** This document says which tiers were actually executed and which
+**53 automated tests, all passing.** This document says which tiers were actually executed and which
 were not — the distinction is kept honest rather than implied.
 
 ```bash
-./gradlew testDebugUnitTest        # every executable tier below (37 tests)
+./gradlew testDebugUnitTest        # every executable tier below (53 tests)
 ./gradlew :core:data:testDebugUnitTest --rerun-tasks   # one module, forced to re-run
 ./gradlew lint                     # Android lint
 ./gradlew connectedDebugAndroidTest   # Espresso — needs a device/emulator
@@ -18,8 +18,10 @@ green run indistinguishable from a run that executed nothing.
 | Tier | Tool | Module | Count | Executed? |
 |---|---|---|---|---|
 | API contract | MockWebServer + the committed fixtures | `:core:data` | 6 | ✅ |
-| Mappers | JUnit | `:core:data` | 9 | ✅ |
-| Repository (+ Room) | Room in-memory + Robolectric + Turbine | `:core:data` | 8 | ✅ |
+| Mappers | JUnit | `:core:data` | 11 | ✅ |
+| Repository (+ Room) | Room in-memory + Robolectric + Turbine | `:core:data` | 10 | ✅ |
+| **Image alignment** | JUnit against the real `list.json` | `:feature:list` | 6 | ✅ |
+| Design system (accordion) | Robolectric | `:core:designsystem` | 6 | ✅ |
 | List ViewModel | coroutines-test + Turbine | `:feature:list` | 5 | ✅ |
 | Detail ViewModel | coroutines-test + Turbine | `:feature:detail` | 5 | ✅ |
 | Compose UI | `createComposeRule` under Robolectric | `:feature:favorites` | 4 | ✅ |
@@ -45,6 +47,15 @@ stored once and joined into a single `observeAds()`, so no two screens can disag
 every request, so identity comes from the cached ad (ADR-0005). Without these, the app looks correct
 on ad 1 and lies on the other three.
 
+**3. Every picture belongs to the ad it is shown under.**
+`every card uses its own ad's thumbnail` and `no two cards share an image url` (`:feature:list`),
+`the detail gallery shows the opened ad's photos not ad 1's` and
+`every gallery photo url belongs to the cached ad` (`:core:data`). These exist because the first
+implementation took the detail gallery from the response, putting ad 1's rooms on ads 2–4 — a bug
+that no test caught and a person spotted by looking at the screen. The suite now asserts alignment
+against the real payloads, including that the four fixtures have genuinely distinct photos so the
+assertions can fail.
+
 Supporting guards worth keeping: `a refresh does not clear existing favorites`,
 `a refresh failure with a populated cache still shows the ads`, and
 `an unknown field added upstream does not break parsing`.
@@ -65,6 +76,8 @@ Not hypothetical — each of these was found by a test failing, not by review:
 - **Six repository tests failed on a `DispatchException`** because a `TestDispatcher` built in
   `@Before` carries its own scheduler, which cannot be mixed with `runTest`'s.
 - **CI was red while local was green**: Robolectric's SDK 36 sandbox needs a Java 21 JVM.
+- **Ads 2–4 displayed ad 1's photos.** Found by a human looking at the app, not by the suite — the
+  gap is now closed by the alignment tier above, and the lesson is recorded in ADR-0005.
 
 ## What is deliberately not tested
 

@@ -58,8 +58,12 @@ private fun ParkingSpaceDto.toDomain(): ParkingSpace = ParkingSpace(
  *
  * The mock detail endpoint returns ad 1 for every request, so trusting its `adid`, `priceInfo` or
  * `ubication` would show ad 1's identity on ads 2-4. Identity therefore comes from [listAd] and only
- * the rich fields — characteristics, energy certificate, gallery, long comment — come from the
- * response. See docs/DECISIONS/ADR-0005-detail-merge-strategy.md.
+ * the rich fields — characteristics, energy certificate, long comment — come from the response.
+ *
+ * **Photos count as identity.** Each list ad carries its own gallery, while the detail payload's
+ * images are ad 1's rooms; taking them from the response put the wrong flat's photos on three of the
+ * four ads. The response's gallery is used only when the cached ad has no images of its own.
+ * See docs/DECISIONS/ADR-0005-detail-merge-strategy.md.
  *
  * Do not "fix" this by using the response's own id. A regression test guards it.
  */
@@ -89,7 +93,9 @@ internal fun AdDetailDto.toDomain(listAd: Ad): AdDetail = AdDetail(
             emissionsType = it.emissions?.type,
         )
     },
-    gallery = multimedia?.images.orEmpty().map {
-        AdImage(url = it.url, tag = it.tag, localizedName = it.localizedName)
+    gallery = listAd.images.ifEmpty {
+        multimedia?.images.orEmpty().map {
+            AdImage(url = it.url, tag = it.tag, localizedName = it.localizedName)
+        }
     },
 )

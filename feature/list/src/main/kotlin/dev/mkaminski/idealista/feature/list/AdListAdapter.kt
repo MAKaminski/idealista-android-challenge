@@ -35,25 +35,29 @@ internal class AdListAdapter(
 
         fun bind(ad: Ad) = with(binding) {
             val context = root.context
+            val model = ad.toCardUiModel()
 
-            price.text = Formatters.price(ad.price, ad.currencySuffix)
-            address.text = listOfNotNull(ad.address, ad.district).joinToString(", ")
+            price.text = model.price
+            address.text = model.address
             summary.text = context.getString(
                 R.string.list_summary,
-                ad.rooms,
-                ad.bathrooms,
-                Formatters.area(ad.sizeSquareMeters),
+                model.roomCount,
+                model.bathCount,
+                model.area,
             )
 
+            // Tagged with the ad it belongs to, so a recycled row showing a stale image is a
+            // detectable state rather than a subtle visual bug.
+            thumbnail.tag = model.propertyCode
             thumbnail.contentDescription =
                 context.getString(R.string.ad_thumbnail_description, ad.address)
-            thumbnail.load(ad.thumbnailUrl) {
+            thumbnail.load(model.imageUrl) {
                 placeholder(dev.mkaminski.idealista.designsystem.R.drawable.image_placeholder)
                 error(dev.mkaminski.idealista.designsystem.R.drawable.image_placeholder)
             }
 
             // The date is the requirement, not a nicety: an ad shows *when* it was favorited.
-            val favoritedAt = ad.favoritedAt
+            val favoritedAt = model.favoritedAt
             if (favoritedAt != null) {
                 favoritedOn.text = context.getString(
                     R.string.favorite_saved_on,
@@ -65,14 +69,14 @@ internal class AdListAdapter(
             }
 
             favoriteToggle.setIconResource(
-                if (ad.isFavorite) {
+                if (model.isFavorite) {
                     dev.mkaminski.idealista.designsystem.R.drawable.ic_favorite_filled
                 } else {
                     dev.mkaminski.idealista.designsystem.R.drawable.ic_favorite
                 },
             )
             favoriteToggle.contentDescription = context.getString(
-                if (ad.isFavorite) R.string.favorite_remove else R.string.favorite_add,
+                if (model.isFavorite) R.string.favorite_remove else R.string.favorite_add,
             )
 
             adCard.setOnClickListener { onAdClick(ad) }

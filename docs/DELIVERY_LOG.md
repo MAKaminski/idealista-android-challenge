@@ -41,6 +41,65 @@ is the gate that proves the AGP 9 / Hilt / KSP combination compiles before any a
 
 ---
 
+## 2026-07-28 — Wrong photos, and collapsible detail sections
+
+Reported from the running app: *"various links are loading the incorrect pictures"*. Correct, and it
+was a real bug.
+
+### The bug
+
+The detail screen took its gallery from the detail response. That response **always describes ad 1**,
+so ads 2, 3 and 4 showed another flat's rooms. ADR-0005 exists precisely to stop this, and the
+original merge simply drew the identity/rich-content line in the wrong place: it treated photos as
+rich content when they are identity. Each list ad carries its own `multimedia.images`.
+
+Fixed by sourcing the gallery from the cached ad, with the response's images used only when the ad
+has none. ADR-0005 amended with the amendment stated rather than the table quietly edited.
+
+Accepted cost: ad 1's detail payload has ten photos with localized room names; its list entry has
+seven without them. Seven correct photos beat ten possibly-wrong ones.
+
+### Hardening so it cannot recur
+
+| Test | Module |
+|---|---|
+| `every card uses its own ad's thumbnail` (all four fixtures) | `:feature:list` |
+| `no two cards share an image url` | `:feature:list` |
+| `the fixture ads have distinct thumbnails` — so the above can actually fail | `:feature:list` |
+| `an ad without a thumbnail yields a null url rather than borrowing one` | `:feature:list` |
+| `the model carries the property code a click will report` | `:feature:list` |
+| `the detail gallery shows the opened ad's photos not ad 1's` (all four ads) | `:core:data` |
+| `every gallery photo url belongs to the cached ad` | `:core:data` |
+| `the merged gallery is the opened ad's photos not the response's` | `:core:data` |
+
+The list card now binds through an `AdCardUiModel`, so the image URL and the property code a click
+reports come from **one** object — they cannot drift apart — and alignment is assertable on the JVM
+without an image loader or a device.
+
+### Collapsible sections
+
+The detail screen was one long column. It now has an `AccordionSection` component in
+`:core:designsystem`: a tappable header with title, summary and chevron over collapsible content,
+with animated expand/collapse, a `contentDescription` that states the action, and expanded state that
+survives rotation. The detail screen uses four — Characteristics (open), Features and extras,
+Location, Description — and a Features section was added that surfaces amenities the screen never
+showed before.
+
+### Verification
+
+| Command | Result |
+|---|---|
+| `./gradlew lint testDebugUnitTest assembleDebug` | **BUILD SUCCESSFUL** |
+| Test census | **53 tests, 0 failures** (was 37) |
+
+### Worth recording
+
+This bug was found by a person looking at the screen, not by the 37 tests that existed. The suite
+verified that identity fields merged correctly and never asked whether the pictures matched. That is
+the honest limit of the previous test pyramid, and the gap is now closed.
+
+---
+
 ## 2026-07-28 — Steps 6, 7 and 9: Compose, the test pyramid, and the docs
 
 **Delivered:** the remaining plan. The app is now feature-complete against the brief.

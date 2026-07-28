@@ -200,7 +200,48 @@ class DefaultAdRepositoryTest {
             assertNotEquals("calle de Lagasca", detail.ad.address)
             // ...while the rich content still comes from the detail payload.
             assertEquals(133, detail.characteristics.constructedAreaSquareMeters)
-            assertEquals(10, detail.gallery.size)
+            // Photos, though, are ad 3's own — not the payload's ten pictures of ad 1.
+            assertEquals(detail.ad.images.size, detail.gallery.size)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    /**
+     * Regression: the detail payload's gallery is ad 1's rooms, so taking photos from the response
+     * put the wrong flat's pictures on ads 2-4. Photos are identity — they come from the opened ad.
+     */
+    @Test
+    fun `the detail gallery shows the opened ad's photos not ad 1's`() = runTest {
+        repository.refreshAds().getOrThrow()
+
+        val galleries = mutableMapOf<String, List<String>>()
+        listOf("1", "2", "3", "4").forEach { code ->
+            repository.observeAdDetail(code).test {
+                val detail = awaitItem()
+                galleries[code] = detail.gallery.map { it.url }
+                // Every photo on this screen belongs to the ad the user opened.
+                assertEquals(detail.ad.images.map { it.url }, detail.gallery.map { it.url })
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+        // ...and the four ads genuinely differ, so the assertion above can fail.
+        val adOne = galleries.getValue("1")
+        listOf("2", "3", "4").forEach { code ->
+            assertNotEquals(adOne, galleries.getValue(code))
+        }
+    }
+
+    @Test
+    fun `every gallery photo url belongs to the cached ad`() = runTest {
+        repository.refreshAds().getOrThrow()
+
+        repository.observeAdDetail("3").test {
+            val detail = awaitItem()
+            val cachedUrls = detail.ad.images.map { it.url }.toSet()
+
+            assertTrue(detail.gallery.isNotEmpty())
+            detail.gallery.forEach { image -> assertTrue(image.url in cachedUrls) }
             cancelAndIgnoreRemainingEvents()
         }
     }
