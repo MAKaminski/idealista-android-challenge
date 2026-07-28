@@ -1,0 +1,35 @@
+[versions]
+# Toolchain — see docs/DECISIONS/ADR-0001-toolchain.md before changing any of these.
+# AGP 9's built-in Kotlin support compiles Android modules and manages the Kotlin version (2.2.10);
+# AGP's own POM pins the matching KSP (2.2.10-2.0.2). `kotlin` below exists only so non-Android
+# modules (:core:model) and build-logic use the *same* compiler. Bump the three together or not at all.
+agp = "9.3.1"
+kotlin = "2.2.10"
+ksp = "2.2.10-2.0.2"
+
+# Libraries
+androidxCore = "1.19.0"
+desugar = "2.1.5"
+hilt = "2.60.1"          # 2.59+ is AGP 9 only; 2.59 itself fails on AGP 9 (dagger#5099)
+room = "2.8.4"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
+desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
+# Gradle plugins consumed as libraries by build-logic's convention plugins.
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "symbol-processing-gradle-plugin", version.ref = "ksp" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

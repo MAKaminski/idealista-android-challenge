@@ -23,8 +23,9 @@ requirement for a bonus.
 
 | Phase | State |
 |---|---|
-| Research + planning + docs | ✅ delivered (this commit) |
-| Gradle scaffold and app code | ⛔ not started |
+| Research + planning + docs | ✅ delivered |
+| Step 1 — Gradle scaffold (8 modules, convention plugins, Hilt + Room gate) | ✅ builds green |
+| Steps 2–9 — app code, tests, CI | ⛔ not started |
 
 Do not describe unwritten code as if it exists. `docs/DELIVERY_LOG.md` is the source of truth for
 what has actually been built and verified.
@@ -34,8 +35,9 @@ what has actually been built and verified.
 The Android SDK is **not** installed in a fresh container. Bootstrap once:
 
 ```bash
-# cmdline-tools + platform 36 + build-tools 36.0.0 (~2-3 GB)
-sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
+# cmdline-tools, then:
+sdkmanager "platform-tools" "platforms;android-37.1" "build-tools;37.0.0"
+echo "sdk.dir=$HOME/Android/sdk" > local.properties
 ```
 
 Then (all commands from the repo root, via the wrapper — never a system `gradle`):
@@ -52,20 +54,33 @@ into CI, but they cannot be executed locally — say so rather than reporting th
 
 ## 4. Pinned toolchain
 
-AGP 9.3.1 · Gradle 9.5 · Kotlin 2.3.10 · KSP 2.3.10 · Hilt 2.60.1 · Room 2.8.4
-compileSdk 36 · targetSdk 36 · minSdk 24 (with core library desugaring) · JDK 17 toolchain
+AGP 9.3.1 · Gradle 9.6.1 · Kotlin 2.2.10 (**AGP's built-in Kotlin**) · KSP 2.2.10-2.0.2 ·
+Hilt 2.60.1 · Room 2.8.4
+compileSdk 37 + compileSdkMinor 1 · targetSdk 37 · minSdk 24 (core library desugaring) · JDK 17
+toolchain (auto-provisioned by the foojay resolver)
 
-Constraints that are easy to break — check `docs/DECISIONS/` before changing any of these:
+Constraints that are easy to break — all of them cost a build cycle to discover, so check
+`docs/DECISIONS/ADR-0001-toolchain.md` before changing any:
 
-- **KSP publishes no 2.4.x**, so Kotlin cannot go above 2.3.10.
+- **Kotlin is managed by AGP**, not by us. AGP 9's built-in Kotlin is 2.2.10 and AGP's POM pins the
+  matching KSP `2.2.10-2.0.2`. The catalog's `kotlin` entry exists only so `:core:model` and
+  `build-logic` use the same compiler. Raising Kotlin means raising AGP.
+- AGP 9's built-in Kotlin is **incompatible with KAPT**. Annotation processing is **KSP only** —
+  never add `kapt`.
+- Standalone KSP registers generated dirs via `kotlin.sourceSets`, which built-in Kotlin forbids;
+  `android.disallowKotlinSourceSets=false` in `gradle.properties` is what makes Room and Hilt work.
+  Its "experimental option" warning is left visible on purpose — don't suppress it.
 - **Hilt 2.59+ dropped AGP 8 support**; AGP 9 and Hilt 2.60.1 move together. Hilt 2.59 has a known
   `ComponentTreeDeps` failure on AGP 9 — do not downgrade to it.
-- AGP 9 enables **built-in Kotlin**, which is **incompatible with KAPT**. Annotation processing is
-  **KSP only**. Do not add `kapt` anywhere.
+- `androidx.core:core-ktx:1.19.0` requires compileSdk 37+, and platforms are minor-versioned now:
+  `compileSdk = 37` **plus** `compileSdkMinor = 1`.
 - AGP 9 disallows `getDefaultProguardFile("proguard-android.txt")` — use `proguard-android-optimize.txt`.
 - AGP 9 makes the R class non-final: `R.id.x` cannot appear in a `when` branch. Use `if/else`.
+- The Gradle `wrapper` task cannot run while AGP 9 is on the root classpath (the system Gradle can't
+  load it). To regenerate it, move `build.gradle.kts`/`settings.gradle.kts` aside first.
 
-All versions live in `gradle/libs.versions.toml`. Never hardcode a version in a module script.
+All versions live in `gradle/libs.versions.toml`. Never hardcode a version in a module script — SDK
+levels live in `build-logic`'s `Sdk` object and module scripts only set their `namespace`.
 
 ## 5. Module map and dependency rules
 

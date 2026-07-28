@@ -19,11 +19,14 @@ storage, AI context files) — and document the delivery honestly enough that a 
 
 ## Pinned versions
 
-AGP 9.3.1 · Gradle 9.5 · Kotlin 2.3.10 · KSP 2.3.10 · Hilt 2.60.1 · Room 2.8.4 · Compose BOM
-2026.06.01 · Navigation 2.9.8 · Lifecycle 2.11.0 · Retrofit 3.0.0 · OkHttp 5.4.0 ·
-kotlinx-serialization-json 1.11.0 · Coil3 3.5.0 · Material 1.14.0 · Turbine 1.2.1 · MockK 1.14.11 ·
-Robolectric 4.16.1 · Espresso 3.7.0
-compileSdk/targetSdk 36 · minSdk 24 + core library desugaring · JDK 17 toolchain
+**As built** (step 1 corrected four of these — see ADR-0001):
+AGP 9.3.1 · Gradle 9.6.1 · Kotlin 2.2.10 via AGP's built-in Kotlin · KSP 2.2.10-2.0.2 · Hilt 2.60.1 ·
+Room 2.8.4 · compileSdk 37 + compileSdkMinor 1 · targetSdk 37 · minSdk 24 + core library desugaring ·
+JDK 17 toolchain (foojay-provisioned)
+
+**Planned for later steps:** Compose BOM 2026.06.01 · Navigation 2.9.8 · Lifecycle 2.11.0 ·
+Retrofit 3.0.0 · OkHttp 5.4.0 · kotlinx-serialization-json 1.11.0 · Coil3 3.5.0 · Material 1.14.0 ·
+Turbine 1.2.1 · MockK 1.14.11 · Robolectric 4.16.1 · Espresso 3.7.0
 
 Rationale and the hard constraints behind these numbers are in
 [`DECISIONS/ADR-0001-toolchain.md`](DECISIONS/ADR-0001-toolchain.md).
@@ -35,8 +38,8 @@ has a verification command that must pass before the next step starts.
 
 | # | Commit | Delivers | Verify |
 |---|---|---|---|
-| 0 | *(environment)* | Android SDK: cmdline-tools, `platforms;android-36`, `build-tools;36.0.0` | `sdkmanager --list_installed` |
-| 1 | `chore(build)` | Gradle wrapper 9.5, `libs.versions.toml`, `build-logic` convention plugins, empty modules, Hilt wiring, `.gitignore` | `./gradlew assembleDebug` — **AGP 9 gate** |
+| 0 | *(environment)* ✅ | Android SDK: cmdline-tools, `platforms;android-37.1`, `build-tools;37.0.0` | `sdkmanager --list_installed` ✅ |
+| 1 | `chore(build)` ✅ | Gradle wrapper 9.6.1, `libs.versions.toml`, `build-logic` convention plugins, 8 modules, Hilt + Room gate, `.gitignore` | `./gradlew assembleDebug testDebugUnitTest lint` ✅ green, configuration cache reused |
 | 2 | `feat(data)` | Retrofit + serialization DTOs, mappers, fixtures wired as test resources | `./gradlew :core:data:test` |
 | 3 | `feat(data)` | Room cache + favorites DAO, `AdRepository` incl. the detail-merge strategy | `./gradlew :core:data:test` |
 | 4 | `feat(list)` | XML list screen, ViewModel, favorite toggle + date badge, loading/error/empty states | `./gradlew :feature:list:test` |

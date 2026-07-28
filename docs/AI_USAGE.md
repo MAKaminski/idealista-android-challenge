@@ -59,8 +59,31 @@ the argument for the verify-then-write rule, not a footnote to it.
 - **Deferred to the user:** ambition level, Hilt vs manual DI, Compose placement, and how aggressive
   to be on toolchain currency. These are taste and risk calls, not technical facts.
 
-## Sessions 2+ — implementation
+## Session 2 — build scaffold (2026-07-27)
 
-Not started. Each implementation session appends here: what was generated, what was hand-corrected,
-and the actual command output backing the claim, mirrored in
-[`DELIVERY_LOG.md`](DELIVERY_LOG.md).
+**Prompt:** *"Start on step 1"*
+
+The AI wrote the eight-module scaffold, convention plugins and version catalog in one pass, then
+spent four build cycles being corrected by the compiler:
+
+| The AI wrote | The build said |
+|---|---|
+| `gradle wrapper --gradle-version 9.5` | there is no Gradle 9.5 — 9.5.0 and 9.6.1 exist |
+| Kotlin/KSP pinned to 2.3.10 | AGP 9 manages Kotlin itself (2.2.10) and pins KSP `2.2.10-2.0.2` |
+| `compileSdk = 36` | `core-ktx:1.19.0` requires 37+, and platforms now carry a minor version |
+| standalone KSP with built-in Kotlin | "Using kotlin.sourceSets DSL is not allowed with built-in Kotlin" |
+| a JDK 17 toolchain | no JDK 17 on the machine → added the foojay resolver so the build provisions it |
+
+Every one of those was a plausible-looking line that a reviewer skimming the diff would have waved
+through. None survived contact with `./gradlew`. This is the concrete case for the working method
+above: the AI is fast at producing a *shape* that is right and *details* that are wrong, so the value
+comes from running it, not from reading it.
+
+**Hand-decided, not AI-suggested:** leaving the `disallowKotlinSourceSets` warning visible instead of
+suppressing it (it's an honest signal that KSP hasn't finished its own AGP 9 migration), and amending
+ADR-0001 with the corrections rather than silently re-pinning the versions.
+
+## Sessions 3+ — features
+
+Not started. Each session appends here: what was generated, what was hand-corrected, and the actual
+command output backing the claim, mirrored in [`DELIVERY_LOG.md`](DELIVERY_LOG.md).
