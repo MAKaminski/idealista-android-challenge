@@ -41,6 +41,27 @@ is the gate that proves the AGP 9 / Hilt / KSP combination compiles before any a
 
 ---
 
+## 2026-07-28 — Step 8 (pulled forward): CI
+
+**Delivered:** `.github/workflows/ci.yml` — lint, unit tests and `assembleDebug` on every push to
+`master` and every PR, with reports uploaded on failure and the **debug APK uploaded on success**.
+
+Moved ahead of steps 2–7 for two reasons: everything after it is then verified independently instead
+of by a developer running commands and reporting the result, and each green run publishes an APK that
+can be sideloaded without a local Android toolchain.
+
+### Verification
+
+| Command | Result |
+|---|---|
+| `./gradlew lint testDebugUnitTest assembleDebug` (the exact CI command, locally) | **BUILD SUCCESSFUL** |
+| Same command on a clean macOS/Apple Silicon clone | **BUILD SUCCESSFUL in 2m 11s** — the toolchain reproduces off this container |
+
+Note the unit-test step currently passes **vacuously**: no tests exist yet. It stops being vacuous at
+step 2.
+
+---
+
 ## 2026-07-27 — Step 0 + Step 1: SDK bootstrap and Gradle scaffold
 
 **Delivered:** the Android SDK in this environment, and the eight-module Gradle scaffold with

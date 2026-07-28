@@ -46,10 +46,12 @@ has a verification command that must pass before the next step starts.
 | 5 | `feat(detail)` | XML detail screen, `ViewPager2` gallery, merged detail, favorite FAB | `./gradlew :feature:detail:test` |
 | 6 | `feat(favorites)` | Compose favorites screen + the detail screen's `ComposeView` component | `./gradlew testDebugUnitTest` |
 | 7 | `test` | Robolectric fragment/Compose tests, Espresso e2e (authored), Jacoco report | `./gradlew testDebugUnitTest jacocoTestReport` |
-| 8 | `ci` | GitHub Actions: lint + unit tests + `assembleDebug`, reports uploaded | workflow green on the PR |
+| 8 | `ci` ✅ **pulled forward** | GitHub Actions: lint + unit tests + `assembleDebug`, reports **and the debug APK** uploaded as artifacts | workflow green on the PR |
 | 9 | `docs` | Docs refreshed with real results, screenshots, requirement matrix in `README.md` | manual review |
 
 A **draft PR** is opened after the first push and kept current.
+
+**Step 8 was pulled forward to run second.** Every step after it is then verified by something other than a developer running commands and reporting the result, and each green run publishes a downloadable debug APK — which is how the app gets onto a device without a local Android toolchain.
 
 ## Step 1 is a gate
 
