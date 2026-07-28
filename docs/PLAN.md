@@ -40,7 +40,7 @@ has a verification command that must pass before the next step starts.
 |---|---|---|---|
 | 0 | *(environment)* ✅ | Android SDK: cmdline-tools, `platforms;android-37.1`, `build-tools;37.0.0` | `sdkmanager --list_installed` ✅ |
 | 1 | `chore(build)` ✅ | Gradle wrapper 9.6.1, `libs.versions.toml`, `build-logic` convention plugins, 8 modules, Hilt + Room gate, `.gitignore` | `./gradlew assembleDebug testDebugUnitTest lint` ✅ green, configuration cache reused |
-| 2 | `feat(data)` | Retrofit + serialization DTOs, mappers, fixtures wired as test resources | `./gradlew :core:data:test` |
+| 2 | `feat(data)` ✅ | Retrofit + serialization DTOs, mappers, fixtures wired as test resources | `./gradlew :core:data:testDebugUnitTest` ✅ 15 tests green |
 | 3 | `feat(data)` | Room cache + favorites DAO, `AdRepository` incl. the detail-merge strategy | `./gradlew :core:data:test` |
 | 4 | `feat(list)` | XML list screen, ViewModel, favorite toggle + date badge, loading/error/empty states | `./gradlew :feature:list:test` |
 | 5 | `feat(detail)` | XML detail screen, `ViewPager2` gallery, merged detail, favorite FAB | `./gradlew :feature:detail:test` |

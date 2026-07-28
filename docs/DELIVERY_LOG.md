@@ -41,6 +41,36 @@ is the gate that proves the AGP 9 / Hilt / KSP combination compiles before any a
 
 ---
 
+## 2026-07-28 — Step 2: network layer, mappers and contract tests
+
+**Delivered:** `:core:model` domain types, and in `:core:data` the two DTO hierarchies, the mappers
+(including the detail-merge strategy), the Retrofit/kotlinx.serialization stack and its Hilt module —
+with **15 tests**, the first real ones in the project.
+
+### Verification
+
+| Command | Result |
+|---|---|
+| `./gradlew :core:data:testDebugUnitTest` | **15 tests, 0 failures** (`AdMappersTest` 9, `IdealistaApiContractTest` 6) |
+| `./gradlew lint testDebugUnitTest assembleDebug` | **BUILD SUCCESSFUL** |
+
+The load-bearing guard from `TESTING.md` now exists and passes:
+`detail for ad 3 never shows ad 1 identity`.
+
+### Found by building
+
+- **The kotlinx.serialization compiler plugin works under AGP 9 built-in Kotlin.** Checked with a
+  one-class probe before writing a data layer on top of it, since KSP had already needed an escape
+  hatch. No workaround needed.
+- **AGP 9's new-DSL source sets are not reachable from Kotlin DSL.** Registering an extra test
+  resource dir — `android.sourceSets.getByName("test").resources.srcDir(...)` — fails with
+  `DefaultAndroidLibrarySourceSet_Decorated cannot be cast to AndroidLibrarySourceSet`, inside the
+  `android { }` block as well as outside it. The fixtures are therefore synced into the standard
+  `src/test/resources/fixtures` (gitignored) by a `Sync` task instead. The root `list.json` /
+  `detail.json` stay the single source of truth either way.
+
+---
+
 ## 2026-07-28 — Step 8 (pulled forward): CI
 
 **Delivered:** `.github/workflows/ci.yml` — lint, unit tests and `assembleDebug` on every push to
