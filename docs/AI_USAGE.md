@@ -83,7 +83,46 @@ comes from running it, not from reading it.
 suppressing it (it's an honest signal that KSP hasn't finished its own AGP 9 migration), and amending
 ADR-0001 with the corrections rather than silently re-pinning the versions.
 
-## Sessions 3+ — features
+## Sessions 3–6 — the app (2026-07-28)
 
-Not started. Each session appends here: what was generated, what was hand-corrected, and the actual
-command output backing the claim, mirrored in [`DELIVERY_LOG.md`](DELIVERY_LOG.md).
+Data layer, both XML screens, the Compose screen and the tests. The pattern from session 2 held all
+the way through: the *shape* the AI proposed was consistently right, and the *details* were
+consistently wrong until something ran them.
+
+### What the compiler, lint and the tests caught
+
+| Where | What was wrong |
+|---|---|
+| Coil 3.5.0 | Ships Kotlin 2.4 metadata; the AGP-managed 2.2.10 compiler cannot read it. Pinned to 3.4.0 |
+| Robolectric | No API 37 runtime; every Robolectric test failed until pinned to `sdk=36` |
+| Test dispatchers | A `TestDispatcher` built in `@Before` carries its own scheduler — six tests died on `DispatchException` |
+| Turbine coordinates | `app.cash:turbine` is wrong; it is `app.cash.turbine:turbine` |
+| `layout_marginHorizontal` | API 26+, against minSdk 24 — lint failed the build |
+| `app_name` | Lint failed on a missing Spanish translation for a brand name; marked `translatable="false"` |
+| Compose test selector | `onNodeWithText` cannot click an icon; it needed `onNodeWithContentDescription` |
+| CI vs local | Robolectric's SDK 36 sandbox needs a Java 21 JVM — CI was red while local was green |
+
+### The one that mattered
+
+`retry re-subscribes after a failure` failed on its first run and exposed a genuine defect: `catch`
+outside `flatMapLatest` completed the whole flow chain, so after any network error the retry button
+was permanently dead. The screen would have looked entirely normal in review and in a manual
+click-through. That test is the reason it isn't shipping.
+
+### Judgment calls made by hand, not by the AI
+
+- Leaving the `disallowKotlinSourceSets` warning **visible** instead of suppressing it — it is honest
+  signal that the project sits ahead of KSP's own AGP 9 migration.
+- Skipping SafeArgs rather than adding a plugin for one string argument.
+- Keeping the Espresso test in the repository, compiled on every build, while stating plainly
+  everywhere that it has never been executed. The alternatives — deleting it, or counting it as
+  passing — are both worse.
+- Amending ADR-0001 with the evidence each time a pin turned out to be wrong, rather than quietly
+  editing the version numbers.
+
+### Honest assessment of the AI's contribution
+
+It wrote nearly all of the code and most of the prose, and it was fast at both. It was also wrong
+about a specific, checkable fact roughly once per build cycle. The delivery is only trustworthy
+because every claim in it was run before it was written down — which is the entire method, and the
+reason `DELIVERY_LOG.md` records commands and their real output rather than intentions.

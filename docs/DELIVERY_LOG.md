@@ -41,6 +41,54 @@ is the gate that proves the AGP 9 / Hilt / KSP combination compiles before any a
 
 ---
 
+## 2026-07-28 — Steps 6, 7 and 9: Compose, the test pyramid, and the docs
+
+**Delivered:** the remaining plan. The app is now feature-complete against the brief.
+
+### Step 6 — Compose in both placements (ADR-0006)
+
+- `:feature:favorites` is **Compose end-to-end**: a `LazyColumn` of favorited ads sorted by when they
+  were saved, with an empty state and per-row removal, hosted in a Fragment via `ComposeView` and
+  reached from a bottom navigation bar.
+- The XML detail screen's characteristics panel is now a **`ComposeView` embedded in the layout** —
+  the incremental-adoption half of the decision. The screen around it is still XML with ViewBinding,
+  as the brief requires.
+- `:core:designsystem` gained a Compose theme built from the same colour tokens as `themes.xml`, so
+  the two toolkits are visually indistinguishable.
+
+### Step 7 — the test pyramid
+
+| Added | Where |
+|---|---|
+| 4 Compose UI tests (`createComposeRule` under Robolectric) | `:feature:favorites` |
+| 1 Espresso end-to-end journey — **authored, compiling, never executed** | `:app` |
+| Shared `TestAds` fixtures | `:core:testing` |
+
+### Step 9 — documentation
+
+`README.md` rewritten as a submission front page with a requirement → implementation matrix, the
+detail-endpoint trap explained up front, and a **Known limitations** section. `TESTING.md`,
+`CLAUDE.md` and `AI_USAGE.md` updated to describe what exists rather than what was planned.
+
+### Verification
+
+| Command | Result |
+|---|---|
+| `./gradlew lint testDebugUnitTest assembleDebug` | **BUILD SUCCESSFUL** |
+| Test census | **37 tests, 0 failures** — `:core:data` 23, `:feature:list` 5, `:feature:detail` 5, `:feature:favorites` 4 |
+| `./gradlew assembleDebugAndroidTest` | **BUILD SUCCESSFUL** — the Espresso test compiles |
+
+### Found by building
+
+- **Compose BOM 2026.06.01 works under AGP 9's built-in Kotlin 2.2.10**, unlike Coil 3.5.0. Checked
+  with a one-composable probe before building a screen on it.
+- **Lint failed on `app_name` missing a Spanish translation.** It is a brand name, so the fix is
+  `translatable="false"` rather than a translation — lint was right to ask.
+- **A Compose test cannot click an icon with `onNodeWithText`**: the remove control carries a
+  `contentDescription`, so the selector had to be `onNodeWithContentDescription`.
+
+---
+
 ## 2026-07-28 — Step 5: the XML detail screen
 
 **Delivered:** the second mandatory screen. Cards are now tappable: opening one shows a swipeable

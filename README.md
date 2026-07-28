@@ -1,16 +1,100 @@
-> ### 📋 Submission notes
-> Delivery documentation lives in [`docs/`](docs/) — start with [`docs/README.md`](docs/README.md).
-> The AI context file the challenge asks for is [`CLAUDE.md`](CLAUDE.md).
->
-> **Current state:** research, planning and documentation are complete; application code has not
-> started. [`docs/DELIVERY_LOG.md`](docs/DELIVERY_LOG.md) records what has actually been built and
-> verified, and [`docs/PLAN.md`](docs/PLAN.md) records what comes next.
->
-> The original challenge brief follows, unchanged.
+# idealista Android challenge — submission
+
+An Android app for browsing property ads: a list screen, a detail screen, and favorites that show the
+date each ad was saved. Kotlin, XML views, multi-module, 37 tests, CI.
+
+The original brief is preserved verbatim at the bottom of this file.
+
+## Run it
+
+```bash
+./gradlew installDebug          # onto a running emulator or device
+./gradlew testDebugUnitTest     # 37 tests
+./gradlew lint assembleDebug
+```
+
+Needs the Android SDK (`platforms;android-37.1`, `build-tools;37.0.0`) and a JDK 21 to run Gradle;
+the build itself targets JDK 17 through a toolchain it provisions automatically. Every green CI run
+also publishes a debug APK as an artifact, so the app can be sideloaded without a local toolchain.
+
+## Requirements → where they are
+
+| Requirement | Status | Where |
+|---|---|---|
+| **Kotlin** | ✅ | Every module |
+| **XML views** for the two screens | ✅ | `:feature:list`, `:feature:detail` — ViewBinding, no findViewById |
+| **List screen** | ✅ | `AdListFragment` — RecyclerView + ListAdapter + DiffUtil, Coil, swipe-to-refresh |
+| **Detail screen** | ✅ | `AdDetailFragment` — collapsing toolbar, ViewPager2 gallery, characteristics, energy certificate |
+| **Favorite an ad** | ✅ | `favorites` table + `AdRepository.toggleFavorite` |
+| **Show the favorited date** | ✅ | On the list card, the detail screen and the favorites screen — one source, three surfaces |
+| **Use AI tools** | ✅ | [`docs/AI_USAGE.md`](docs/AI_USAGE.md) — including what the AI got *wrong* |
+| *Bonus* — tests | ✅ | 37 automated tests, [`docs/TESTING.md`](docs/TESTING.md) |
+| *Bonus* — Compose alongside XML | ✅ | A Compose-only favorites screen **and** a `ComposeView` inside the XML detail screen |
+| *Bonus* — persistent storage | ✅ | Room: ad cache + favorites, survives restarts and offline |
+| *Bonus* — AI context files | ✅ | [`CLAUDE.md`](CLAUDE.md) |
+
+## The one thing worth reading first
+
+`detail.json` **always returns the same payload** (ad 1) no matter which ad you open — the brief says
+so in passing, and it is the trap in this challenge. It also uses a different id type (`Int adid` vs
+`String propertyCode`) and a different price shape than the list endpoint.
+
+Binding that response straight to the UI produces an app that looks perfect on ad 1 and silently
+shows the wrong price, address and location for ads 2–4. This app instead **merges**: identity comes
+from the cached list ad, rich content (characteristics, energy certificate, gallery, description)
+comes from the detail response, and two regression tests keep it that way.
+
+See [`docs/DECISIONS/ADR-0005-detail-merge-strategy.md`](docs/DECISIONS/ADR-0005-detail-merge-strategy.md).
+
+## Architecture
+
+```
+:app                  Application, MainActivity, bottom navigation, screen wiring
+:core:model           pure-Kotlin domain models — no Android dependencies
+:core:data            Retrofit + kotlinx.serialization, Room, mappers, AdRepository
+:core:designsystem    Material 3 theme + Compose theme from the same tokens, shared formatters
+:core:testing         shared test fixtures
+:feature:list         XML list screen
+:feature:detail       XML detail screen + one embedded ComposeView
+:feature:favorites    Compose-only screen
+```
+
+Room is the single source of truth: the network only writes into the cache, the UI only reads from
+it. `observeAds()` is one `combine` of ads and favorites, which is why the favorited date is
+identical on all three screens without any screen knowing how favorites are stored.
+
+MVVM with one `StateFlow<UiState>` per screen, sealed states, collected under `repeatOnLifecycle`.
+Hilt for DI. Dispatchers and the `Clock` are injected, so timestamps are asserted exactly in tests.
+
+Full detail in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
+## Documentation
+
+| Document | What it answers |
+|---|---|
+| [`docs/DELIVERY_LOG.md`](docs/DELIVERY_LOG.md) | What was built, in what order, and the actual command output proving it |
+| [`docs/AI_USAGE.md`](docs/AI_USAGE.md) | Which AI tools, what they got wrong, how it was caught |
+| [`docs/API.md`](docs/API.md) | Both endpoints, every field, and the three quirks |
+| [`docs/TESTING.md`](docs/TESTING.md) | Test tiers, and which cannot run headless |
+| [`docs/DECISIONS/`](docs/DECISIONS/) | 7 ADRs |
+| [`CLAUDE.md`](CLAUDE.md) | Project context for AI tools |
+
+## Known limitations
+
+- **The Espresso end-to-end test is authored and compiles, but has never been executed** — it needs a
+  device, and neither the development environment nor CI has one. It is marked as such everywhere
+  rather than counted as passing.
+- **Coil is pinned to 3.4.0**, not 3.5.0: the newer build ships Kotlin 2.4 metadata that AGP 9's
+  built-in Kotlin 2.2.10 compiler cannot read. Same reason Kotlin itself is not on 2.4 — KSP has not
+  shipped it (ADR-0001).
+- **Robolectric is pinned to SDK 36** while the app targets 37; Robolectric has no API 37 runtime yet.
+- The detail screen shows no map. The coordinates are parsed and available; a map needs an API key,
+  which a submission should not carry.
 
 ---
 
-# idealista Android challenge
+# The original brief
+
 idealista Android crew needs you! We need a fellow to face our everyday challenges: new features, problem fixes, UI design, performance, security, backwards compatibility, testing...
 
 We need your help to build the next amazing features that will bring our user experiences to the next level, are you ready to go?

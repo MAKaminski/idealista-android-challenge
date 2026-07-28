@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">idealista challenge</string>
+    <!-- A brand name, so it is deliberately not translated rather than missing a translation. -->
+    <string name="app_name" translatable="false">idealista challenge</string>
+    <string name="nav_properties">Properties</string>
+    <string name="nav_favorites">Favorites</string>
 </resources>

@@ -1,11 +1,16 @@
 package dev.mkaminski.idealista
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import dev.mkaminski.idealista.feature.detail.AdDetailFragment
+import dev.mkaminski.idealista.feature.favorites.FavoritesFragment
 import dev.mkaminski.idealista.feature.list.AdListFragment
 
 /**
@@ -15,15 +20,30 @@ import dev.mkaminski.idealista.feature.list.AdListFragment
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
+    private lateinit var bottomNav: BottomNavigationView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
 
+        bottomNav = findViewById(R.id.bottomNav)
+        // AGP 9 makes R fields non-final, so menu ids cannot be `when` branches (ADR-0001).
+        bottomNav.setOnItemSelectedListener { item ->
+            if (item.itemId == R.id.nav_favorites) {
+                showRoot(FavoritesFragment(), TAG_FAVORITES)
+            } else {
+                showRoot(AdListFragment().withNavigation(), TAG_LIST)
+            }
+            true
+        }
+
         if (savedInstanceState == null) {
-            showList()
+            showRoot(AdListFragment().withNavigation(), TAG_LIST)
         } else {
             reattachCallbacks()
         }
+
+        supportFragmentManager.addOnBackStackChangedListener { updateChromeForBackStack() }
 
         onBackPressedDispatcher.addCallback(
             this,
@@ -40,9 +60,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         )
     }
 
-    private fun showList() {
+    /** Root destinations replace each other; only detail goes on the back stack. */
+    private fun showRoot(fragment: Fragment, tag: String) {
+        supportFragmentManager.popBackStack(TAG_DETAIL, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         supportFragmentManager.beginTransaction()
-            .replace(R.id.mainContainer, AdListFragment().withNavigation(), TAG_LIST)
+            .replace(R.id.mainContainer, fragment, tag)
             .commit()
     }
 
@@ -57,10 +79,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             .commit()
     }
 
+    /** The detail screen is full-bleed; the tab bar would fight its collapsing toolbar. */
+    private fun updateChromeForBackStack() {
+        val onDetail = supportFragmentManager.backStackEntryCount > 0
+        bottomNav.visibility = if (onDetail) View.GONE else View.VISIBLE
+    }
+
     /** Fragments survive rotation, so their navigation callbacks must be re-attached. */
     private fun reattachCallbacks() {
         (supportFragmentManager.findFragmentByTag(TAG_LIST) as? AdListFragment)?.withNavigation()
         (supportFragmentManager.findFragmentByTag(TAG_DETAIL) as? AdDetailFragment)?.withNavigation()
+        updateChromeForBackStack()
     }
 
     private fun AdListFragment.withNavigation() = apply {
@@ -74,5 +103,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private companion object {
         const val TAG_LIST = "list"
         const val TAG_DETAIL = "detail"
+        const val TAG_FAVORITES = "favorites"
     }
 }

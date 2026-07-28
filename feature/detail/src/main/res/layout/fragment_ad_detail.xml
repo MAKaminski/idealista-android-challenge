@@ -105,28 +105,12 @@
                 android:text="@string/detail_characteristics"
                 android:textAppearance="?attr/textAppearanceTitleMedium" />
 
-            <!-- Step 6 replaces this container with a ComposeView (ADR-0006). -->
-            <com.google.android.material.chip.ChipGroup
+            <!-- Compose embedded in an XML screen — the interop half of ADR-0006. -->
+            <androidx.compose.ui.platform.ComposeView
                 android:id="@+id/characteristics"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp" />
-
-            <TextView
-                android:id="@+id/energyHeading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="@string/detail_energy"
-                android:textAppearance="?attr/textAppearanceTitleMedium" />
-
-            <TextView
-                android:id="@+id/energy"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                tools:text="Consumption: E · Emissions: E" />
 
             <TextView
                 android:layout_width="wrap_content"

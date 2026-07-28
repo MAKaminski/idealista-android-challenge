@@ -8,10 +8,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.google.android.material.chip.Chip
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import dev.mkaminski.idealista.designsystem.Formatters
+import dev.mkaminski.idealista.designsystem.IdealistaTheme
 import dev.mkaminski.idealista.feature.detail.databinding.FragmentAdDetailBinding
 import dev.mkaminski.idealista.model.AdDetail
 import kotlinx.coroutines.launch
@@ -92,45 +93,26 @@ class AdDetailFragment : Fragment(R.layout.fragment_ad_detail) {
             favoriteFab.setIconResource(dev.mkaminski.idealista.designsystem.R.drawable.ic_favorite)
         }
 
-        characteristics.removeAllViews()
-        buildList {
-            detail.characteristics.roomNumber?.let { add(context.getString(R.string.detail_rooms, it)) }
-            detail.characteristics.bathNumber?.let { add(context.getString(R.string.detail_baths, it)) }
-            detail.characteristics.constructedAreaSquareMeters?.let {
-                add(Formatters.area(it.toDouble()))
+        // The characteristics panel is Compose inside this XML screen (ADR-0006). Labels are built
+        // here so formatting and string lookup stay out of the composable.
+        val labels = characteristicLabels(
+            characteristics = detail.characteristics,
+            roomsLabel = { context.getString(R.string.detail_rooms, it) },
+            bathsLabel = { context.getString(R.string.detail_baths, it) },
+            areaLabel = { Formatters.area(it.toDouble()) },
+            floorLabel = { context.getString(R.string.detail_floor, it) },
+            liftLabel = { context.getString(if (it) R.string.detail_lift else R.string.detail_no_lift) },
+            communityCostsLabel = {
+                context.getString(R.string.detail_community_costs, Formatters.price(it, ad.currencySuffix))
+            },
+        )
+        characteristics.setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
+        )
+        characteristics.setContent {
+            IdealistaTheme {
+                CharacteristicsPanel(labels = labels, certificate = detail.energyCertificate)
             }
-            detail.characteristics.floor?.let { add(context.getString(R.string.detail_floor, it)) }
-            detail.characteristics.hasLift?.let {
-                add(context.getString(if (it) R.string.detail_lift else R.string.detail_no_lift))
-            }
-            detail.characteristics.communityCosts?.let {
-                add(context.getString(R.string.detail_community_costs, Formatters.price(it, ad.currencySuffix)))
-            }
-        }.forEach { label ->
-            characteristics.addView(
-                Chip(context).apply {
-                    text = label
-                    isClickable = false
-                    isCheckable = false
-                },
-            )
-        }
-
-        val certificate = detail.energyCertificate
-        if (certificate?.consumptionType == null && certificate?.emissionsType == null) {
-            energyHeading.visibility = View.GONE
-            energy.visibility = View.GONE
-        } else {
-            energyHeading.visibility = View.VISIBLE
-            energy.visibility = View.VISIBLE
-            energy.text = listOfNotNull(
-                certificate.consumptionType?.let {
-                    context.getString(R.string.detail_energy_consumption, it.uppercase())
-                },
-                certificate.emissionsType?.let {
-                    context.getString(R.string.detail_energy_emissions, it.uppercase())
-                },
-            ).joinToString(" · ")
         }
     }
 

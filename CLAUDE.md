@@ -23,9 +23,11 @@ requirement for a bonus.
 
 | Phase | State |
 |---|---|
-| Research + planning + docs | ✅ delivered |
-| Step 1 — Gradle scaffold (8 modules, convention plugins, Hilt + Room gate) | ✅ builds green |
-| Steps 2–9 — app code, tests, CI | ⛔ not started |
+| Steps 1–9 — build, data, both XML screens, Compose, tests, CI, docs | ✅ **complete** |
+| Verification | `lint testDebugUnitTest assembleDebug` green · **37 tests** |
+
+The app is feature-complete against the brief. The one thing not executed anywhere is the Espresso
+end-to-end test — authored and compiling, but it needs a device (see `docs/TESTING.md`).
 
 Do not describe unwritten code as if it exists. `docs/DELIVERY_LOG.md` is the source of truth for
 what has actually been built and verified.
@@ -55,7 +57,8 @@ into CI, but they cannot be executed locally — say so rather than reporting th
 ## 4. Pinned toolchain
 
 AGP 9.3.1 · Gradle 9.6.1 · Kotlin 2.2.10 (**AGP's built-in Kotlin**) · KSP 2.2.10-2.0.2 ·
-Hilt 2.60.1 · Room 2.8.4
+Hilt 2.60.1 · Room 2.8.4 · Compose BOM 2026.06.01 · Coil **3.4.0** (3.5.0 ships Kotlin 2.4 metadata
+this compiler cannot read) · Robolectric pinned to `sdk=36`
 compileSdk 37 + compileSdkMinor 1 · targetSdk 37 · minSdk 24 (core library desugaring) · JDK 17
 toolchain (auto-provisioned by the foojay resolver)
 
@@ -85,13 +88,13 @@ levels live in `build-logic`'s `Sdk` object and module scripts only set their `n
 ## 5. Module map and dependency rules
 
 ```
-:app                  Application, Hilt setup, MainActivity, nav graph
+:app                  Application, Hilt setup, MainActivity, bottom nav, screen wiring
 :core:model           pure-Kotlin domain models — no Android dependencies
 :core:data            Retrofit + kotlinx.serialization, Room, DTOs, mappers, repositories
-:core:designsystem    Material 3 theme, shared styles/drawables, Compose theme
-:core:testing         test rules, fakes, JSON fixtures
+:core:designsystem    Material 3 theme + matching Compose theme, drawables, shared formatters
+:core:testing         shared test fixtures (TestAds)
 :feature:list         XML list screen
-:feature:detail       XML detail screen (+ one embedded ComposeView component)
+:feature:detail       XML detail screen (+ an embedded ComposeView characteristics panel)
 :feature:favorites    Compose-only screen
 ```
 
@@ -124,8 +127,10 @@ tables are in [`docs/API.md`](docs/API.md).
 - One `StateFlow<UiState>` per ViewModel, sealed states (`Loading`/`Content`/`Empty`/`Error`),
   collected with `repeatOnLifecycle`. No `LiveData` in new code.
 - Coroutines only; inject dispatchers, never hardcode `Dispatchers.IO` in a class under test.
-- Navigation Component + SafeArgs for screen-to-screen arguments; `SavedStateHandle` for state that
-  must survive process death.
+- Screen-to-screen wiring lives in `MainActivity`, not inside a feature — a feature exposes a
+  callback (`onAdSelected`) and the host decides what to open, so features stay independent.
+  Arguments travel as fragment arguments and are read through `SavedStateHandle`, which also gets
+  process-death survival. SafeArgs is deliberately not used (see the delivery log for step 5).
 - All user-facing text in `strings.xml` (`values/` English, `values-es/` Spanish — the ad data is
   Spanish). No hardcoded strings in layouts or code.
 - `contentDescription` on every meaningful image and toggle.
@@ -138,7 +143,8 @@ Every behavioural change ships with a test. See [`docs/TESTING.md`](docs/TESTING
 Two regression tests are load-bearing and must never be deleted:
 
 - favoriting an ad surfaces the same date on **both** the list and the detail screen;
-- opening ad 3's detail never renders ad 1's identity (the merge-strategy guard).
+- opening ad 3's detail never renders ad 1's identity (the merge-strategy guard) — pinned twice, in
+  `:core:data` and in `:feature:detail`.
 
 ## 9. Definition of done
 
