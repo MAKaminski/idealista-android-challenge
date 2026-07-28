@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_title">Immobili</string>
+    <string name="list_error">Non è stato possibile caricare gli immobili.</string>
+    <string name="list_retry">Riprova</string>
+    <string name="list_empty">Nessun immobile da mostrare per ora.</string>
+    <string name="list_summary">%1$d locali · %2$d bagni · %3$s</string>
+    <string name="favorite_saved_on">Aggiunto ai preferiti il %1$s</string>
+    <string name="favorite_add">Aggiungi ai preferiti</string>
+    <string name="favorite_remove">Rimuovi dai preferiti</string>
+    <string name="ad_thumbnail_description">Foto dell\'immobile in %1$s</string>
+    <string name="filter_sale">In vendita</string>
+    <string name="filter_rent">In affitto</string>
+    <string name="filter_favorites">Preferiti</string>
+    <string name="filter_rooms">3+ locali</string>
+    <string name="filter_baths">2+ bagni</string>
+    <string name="filter_exterior">Esterno</string>
+    <string name="filter_parking">Parcheggio</string>
+    <string name="filter_air_conditioning">Aria cond.</string>
+    <string name="filter_pool">Piscina</string>
+    <string name="filter_terrace">Terrazza</string>
+    <string name="filter_garden">Giardino</string>
+    <string name="filter_price_low">Prezzo ↑</string>
+    <string name="filter_clear">Azzera</string>
+    <plurals name="list_result_count">
+        <item quantity="one">%1$d immobile</item>
+        <item quantity="other">%1$d immobili</item>
+    </plurals>
+    <string name="list_empty_filtered">Nessun immobile corrisponde a questi filtri.</string>
+</resources>

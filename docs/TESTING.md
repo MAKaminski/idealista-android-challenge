@@ -1,10 +1,10 @@
 # Testing
 
-**86 automated tests, all passing.** This document says which tiers were actually executed and which
+**101 automated tests, all passing.** This document says which tiers were actually executed and which
 were not — the distinction is kept honest rather than implied.
 
 ```bash
-./gradlew testDebugUnitTest        # every executable tier below (86 tests)
+./gradlew testDebugUnitTest        # every executable tier below (101 tests)
 ./gradlew :core:data:testDebugUnitTest --rerun-tasks   # one module, forced to re-run
 ./gradlew lint                     # Android lint
 ./gradlew connectedDebugAndroidTest   # Espresso — needs a device/emulator
@@ -20,7 +20,7 @@ green run indistinguishable from a run that executed nothing.
 | API contract | MockWebServer + the committed fixtures | `:core:data` | 6 | ✅ |
 | Mappers | JUnit | `:core:data` | 11 | ✅ |
 | Repository (+ Room) | Room in-memory + Robolectric + Turbine | `:core:data` | 10 | ✅ |
-| **Filter and link logic** | plain JUnit, no Android runtime | `:core:model` | 18 | ✅ |
+| **Filter, link and language logic** | plain JUnit, no Android runtime | `:core:model` | 26 | ✅ |
 | **Image alignment** | JUnit against the real `list.json` | `:feature:list` | 6 | ✅ |
 | Design system (accordion) | Robolectric | `:core:designsystem` | 6 | ✅ |
 | Design system (external links) | Robolectric + shadow intents | `:core:designsystem` | 3 | ✅ |
@@ -28,10 +28,22 @@ green run indistinguishable from a run that executed nothing.
 | Filter chip row | Robolectric | `:feature:list` | 8 | ✅ |
 | Detail ViewModel | coroutines-test + Turbine | `:feature:detail` | 5 | ✅ |
 | Compose UI | `createComposeRule` under Robolectric | `:feature:favorites` | 4 | ✅ |
+| Language picker | `createComposeRule` under Robolectric | `:feature:settings` | 7 | ✅ |
 | End-to-end | Espresso + Hilt test runner | `:app` | 1 | ❌ **authored and compiling, not executed** |
 | Window insets | — | — | 0 | ❌ **not covered — see below** |
+| Applying a locale | — | — | 0 | ❌ **not testable — see below** |
 
-Window insets are the one behaviour changed in this repo with no automated cover. They need a real
+`AppLocales.apply` is not unit-testable and the tests for it were **deleted rather than weakened**.
+On the API 33+ path `AppCompatDelegate.setApplicationLocales` forwards to the framework's
+`LocaleManager`, and Robolectric's sandbox has no per-app locale store — a probe confirmed the call
+is a no-op there and reads back empty. A test that passed would have been testing a stub. What is
+covered instead is the tag logic either side of it (`:core:model`) and the picker's behaviour
+(`:feature:settings`); the two-line delegate call between them is verified by running the app.
+
+Translation completeness *is* enforced: lint's `MissingTranslation` fails the build for any string
+absent from any of the five locales. Verified by deleting one and watching it go red, not assumed.
+
+Window insets are the other behaviour changed in this repo with no automated cover. They need a real
 window with real system bars; Robolectric does not dispatch them meaningfully and a Compose test
 harness reports zero insets. The fix is asserted by inspection against the two screenshots that
 reported it. A reviewer on a cutout display should re-check it by eye.

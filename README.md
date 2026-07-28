@@ -1,7 +1,7 @@
 # idealista Android challenge — submission
 
 An Android app for browsing property ads: a list screen, a detail screen, and favorites that show the
-date each ad was saved. Kotlin, XML views, multi-module, 86 tests, CI.
+date each ad was saved. Kotlin, XML views, multi-module, five languages, 101 tests, CI.
 
 The original brief is preserved verbatim at the bottom of this file.
 
@@ -9,7 +9,7 @@ The original brief is preserved verbatim at the bottom of this file.
 
 ```bash
 ./gradlew runDebug              # build, install AND launch on a running emulator/device
-./gradlew testDebugUnitTest     # 86 tests
+./gradlew testDebugUnitTest     # 101 tests
 ./gradlew lint assembleDebug
 ```
 
@@ -33,8 +33,9 @@ also publishes a debug APK as an artifact, so the app can be sideloaded without 
 | **Show the favorited date** | ✅ | On the list card, the detail screen and the favorites screen — one source, three surfaces |
 | *Beyond the brief* — filtering | ✅ | Chip row over operation, rooms, baths, exterior, parking, amenities, price ([ADR-0008](docs/DECISIONS/ADR-0008-filters-and-external-links.md)) |
 | *Beyond the brief* — external links | ✅ | Listing page and full-size photos in a Custom Tab; the address in a maps app |
+| *Beyond the brief* — five languages | ✅ | English, Spanish, French, Portuguese, Italian, picked in Settings ([ADR-0009](docs/DECISIONS/ADR-0009-per-app-language.md)) |
 | **Use AI tools** | ✅ | [`docs/AI_USAGE.md`](docs/AI_USAGE.md) — including what the AI got *wrong* |
-| *Bonus* — tests | ✅ | 86 automated tests, including image-to-ad alignment, [`docs/TESTING.md`](docs/TESTING.md) |
+| *Bonus* — tests | ✅ | 101 automated tests, including image-to-ad alignment, [`docs/TESTING.md`](docs/TESTING.md) |
 | *Bonus* — Compose alongside XML | ✅ | A Compose-only favorites screen **and** a `ComposeView` inside the XML detail screen |
 | *Bonus* — persistent storage | ✅ | Room: ad cache + favorites, survives restarts and offline |
 | *Bonus* — AI context files | ✅ | [`CLAUDE.md`](CLAUDE.md) |
@@ -66,6 +67,7 @@ See [`docs/DECISIONS/ADR-0005-detail-merge-strategy.md`](docs/DECISIONS/ADR-0005
 :feature:list         XML list screen
 :feature:detail       XML detail screen + one embedded ComposeView
 :feature:favorites    Compose-only screen
+:feature:settings     Compose-only settings, with the language picker
 ```
 
 Room is the single source of truth: the network only writes into the cache, the UI only reads from
@@ -85,7 +87,7 @@ Full detail in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 | [`docs/AI_USAGE.md`](docs/AI_USAGE.md) | Which AI tools, what they got wrong, how it was caught |
 | [`docs/API.md`](docs/API.md) | Both endpoints, every field, and the three quirks |
 | [`docs/TESTING.md`](docs/TESTING.md) | Test tiers, and which cannot run headless |
-| [`docs/DECISIONS/`](docs/DECISIONS/) | 8 ADRs |
+| [`docs/DECISIONS/`](docs/DECISIONS/) | 9 ADRs |
 | [`CLAUDE.md`](CLAUDE.md) | Project context for AI tools |
 
 ## Known limitations
@@ -104,6 +106,10 @@ Full detail in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
   production URL shape and no production listing behind it. The photo and map links do work.
 - **The window-insets fix has no automated test.** Insets need a real window; Robolectric does not
   dispatch them meaningfully. It was verified against the screenshots that reported the problem.
+- **Applying a language is likewise untestable in a unit test.** Robolectric's sandbox has no
+  per-app locale store, so `AppCompatDelegate.setApplicationLocales` is a no-op there. The tag logic
+  and the picker are both covered; the delegate call between them is verified by running the app.
+  Tests that would have passed against the stub were deleted rather than kept as false comfort.
 
 ---
 

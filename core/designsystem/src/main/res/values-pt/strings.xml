@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accordion_expand">Expandir %1$s</string>
+    <string name="accordion_collapse">Recolher %1$s</string>
+    <string name="link_no_app">Nenhuma aplicação neste dispositivo consegue abrir essa ligação.</string>
+</resources>

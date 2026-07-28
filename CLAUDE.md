@@ -24,12 +24,14 @@ requirement for a bonus.
 | Phase | State |
 |---|---|
 | Steps 1–9 — build, data, both XML screens, Compose, tests, CI, docs | ✅ **complete** |
-| Beyond the brief — accordions, filters, external links, edge-to-edge insets | ✅ **complete** |
-| Verification | `lint testDebugUnitTest assembleDebug` green · **86 tests** |
+| Beyond the brief — accordions, filters, external links, edge-to-edge insets, five languages | ✅ **complete** |
+| Verification | `lint testDebugUnitTest assembleDebug` green · **101 tests** |
 
 The app is feature-complete against the brief. Two things are not covered by an executed test: the
 Espresso end-to-end test (authored and compiling, needs a device) and the window-insets fix (needs a
-real window). Both are stated as such in `docs/TESTING.md` rather than counted as passing.
+real window). Applying a locale is a third: Robolectric's sandbox has no per-app locale store, so
+that call cannot be unit-tested at all. All three are stated as such in `docs/TESTING.md` rather
+than counted as passing.
 
 Do not describe unwritten code as if it exists. `docs/DELIVERY_LOG.md` is the source of truth for
 what has actually been built and verified.
@@ -100,6 +102,7 @@ levels live in `build-logic`'s `Sdk` object and module scripts only set their `n
 :feature:list         XML list screen
 :feature:detail       XML detail screen (+ an embedded ComposeView characteristics panel)
 :feature:favorites    Compose-only screen
+:feature:settings     Compose-only settings screen — the language picker
 ```
 
 Rules:
@@ -140,8 +143,13 @@ tables are in [`docs/API.md`](docs/API.md).
   callback (`onAdSelected`) and the host decides what to open, so features stay independent.
   Arguments travel as fragment arguments and are read through `SavedStateHandle`, which also gets
   process-death survival. SafeArgs is deliberately not used (see the delivery log for step 5).
-- All user-facing text in `strings.xml` (`values/` English, `values-es/` Spanish — the ad data is
-  Spanish). No hardcoded strings in layouts or code.
+- All user-facing text in `strings.xml`, in **five** locales: `values/` (en), `values-es/`,
+  `values-fr/`, `values-pt/`, `values-it/`. No hardcoded strings in layouts or code. A string added
+  to one locale and not the rest fails `lint` on `MissingTranslation` — translate all five, and add
+  the new module's folders too if you create one.
+- The in-app language is the **platform's** per-app locale via `AppLocales`/`AppCompatDelegate`.
+  Never add a SharedPreference for it: on API 33+ the system stores the choice and shows it in its
+  own settings, and a private copy is a second source of truth that goes stale (ADR-0009).
 - `contentDescription` on every meaningful image and toggle.
 - Dates are stored as epoch millis and formatted with `java.time` +
   `DateTimeFormatter.ofLocalizedDate(MEDIUM)` in the system zone.

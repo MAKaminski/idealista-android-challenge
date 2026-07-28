@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Settings</string>
+    <string name="settings_language_section">Language</string>
+    <string name="settings_language_explainer">Applies to this app only. Your device stays as it is.</string>
+    <string name="settings_language_system">System default</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_spanish">Spanish</string>
+    <string name="settings_language_french">French</string>
+    <string name="settings_language_portuguese">Portuguese</string>
+    <string name="settings_language_italian">Italian</string>
+</resources>

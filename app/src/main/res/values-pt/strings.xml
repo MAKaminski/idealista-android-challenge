@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="nav_properties">Viviendas</string>
+    <string name="nav_properties">Imóveis</string>
     <string name="nav_favorites">Favoritos</string>
-    <string name="nav_settings">Ajustes</string>
+    <string name="nav_settings">Definições</string>
 </resources>

@@ -41,6 +41,82 @@ is the gate that proves the AGP 9 / Hilt / KSP combination compiles before any a
 
 ---
 
+## 2026-07-28 — A settings screen, and the app in five languages
+
+*"Add a language selector under a settings area, allow the user to at least select: Spanish, French,
+Portuguese, English, Italian."*
+
+### The interesting decision is what **not** to build
+
+The obvious implementation is a `SharedPreference` holding a language tag, read at startup to wrap
+every `Context` in a `Configuration` override. It works, and it is wrong on modern Android.
+
+Since Android 13 the **system** owns per-app language: it lists apps that declare supported locales
+under Settings → Apps → *App* → Language and stores the choice itself. An app keeping its own
+preference has two sources of truth that disagree the moment the user changes it from the system
+screen — and nothing in testing would reveal that, because you have to go to the system screen to
+see it.
+
+So the app stores nothing. `AppCompatDelegate.setApplicationLocales` forwards to the framework on
+API 33+ and is backported below it, through a manifest-declared service. The in-app picker and
+Android's own language screen are two views of one value. Full reasoning in ADR-0009.
+
+### What shipped
+
+| Piece | Where |
+|---|---|
+| `AppLanguage` — five languages, BCP-47 tag resolution | `:core:model` — pure Kotlin, JVM-tested |
+| `AppLocales` — apply / read the selection | `:core:designsystem` — the only `AppCompatDelegate` caller |
+| `SettingsScreen` + `SettingsFragment` | `:feature:settings` — a new Compose-only module |
+| A third bottom-nav destination | `:app` |
+| `values-fr/`, `values-pt/`, `values-it/` for every module | 5 modules × 3 new locales |
+
+The picker offers **System default** alongside the five, and labels each language with its endonym —
+Español, Français, Português, Italiano — above its name in whatever language is showing. Someone who
+lands in Italian by accident cannot read "Italian"; they can find "Italiano".
+
+`SettingsFragment` has no ViewModel on purpose. There is no state to hold — the selection lives in
+the delegate and applying one recreates the activity — so a ViewModel would only mirror a value it
+does not own.
+
+### Two failures worth recording
+
+**The new module had no `robolectric.properties`.** Every test in it died on
+`targetSdkVersion=37 > maxSdkVersion=36` — the same API 37 pin every other Android module already
+carries. A per-module file is a thing a new module silently lacks; noted here so the next one gets
+it at creation.
+
+**The picker's tests failed on rows below the fold.** `LazyColumn` only composes what is visible, so
+four of seven tests failed on `assertExists` and `Failed to inject touch input`. The fix was the
+right container rather than a test workaround: six fixed rows want a `Column` with `verticalScroll`,
+and one `selectableGroup` around the whole set is what makes it a single radio group for a screen
+reader — which `LazyColumn` had been breaking anyway. The tests then `performScrollTo()` before
+anything that touches pixels.
+
+### Deleted rather than weakened
+
+Five tests were written for `AppLocales` round-tripping a language through the delegate. All failed.
+A probe explained why: on the API 33+ path the call forwards to the framework's `LocaleManager`, and
+Robolectric's sandbox has no per-app locale store — `setApplicationLocales` is a genuine no-op there
+and reads back empty.
+
+The tests were deleted. A version that passed would have been asserting against a stub and reporting
+coverage the app does not have. `TESTING.md` carries a row that says zero.
+
+### Verification
+
+| Command | Result |
+|---|---|
+| `./gradlew lint testDebugUnitTest assembleDebug --rerun-tasks` | **BUILD SUCCESSFUL in 2m 10s** |
+| Test count | **101** (was 86) |
+| Generated locale config | `<locale-config>` lists `en-US`, `es`, `fr`, `it`, `pt` |
+| Deleted one `values-fr` string, ran `:feature:settings:lint` | **Error: "settings_language_italian" is not translated in "fr"** — the translation guard is real, then restored and green again |
+
+That last row is the one worth having: five languages across five modules is exactly the change that
+rots quietly, and now it cannot — a string missing from any locale fails the build.
+
+---
+
 ## 2026-07-28 — Insets, external links, and filtering the list
 
 Three reports from the running app, in one pass: *"fix the margin so it doesn't look like shit"*,

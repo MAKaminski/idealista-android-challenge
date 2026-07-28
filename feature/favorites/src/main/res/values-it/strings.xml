@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorites_title">Preferiti</string>
+    <string name="favorites_empty">Nessun preferito. Tocca il cuore su un immobile per salvarlo.</string>
+    <string name="favorites_remove">Rimuovi %1$s dai preferiti</string>
+    <string name="favorites_thumbnail">Foto dell\'immobile in %1$s</string>
+    <string name="favorite_saved_on">Aggiunto ai preferiti il %1$s</string>
+</resources>

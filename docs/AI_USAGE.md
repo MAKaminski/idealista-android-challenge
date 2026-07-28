@@ -148,6 +148,23 @@ Sessions 3–6 were wrong about facts a build could check. This session was wron
 *payload* could check — filters that compile, run, and quietly match everything. The defence is the
 same either way: run it and look, rather than reading the code and agreeing with it.
 
+## Session 8 — settings and five languages (2026-07-28)
+
+### What was corrected by hand
+
+| Correction | Why |
+|---|---|
+| The AI's first design stored the language in a `SharedPreference` and wrapped `Context` | Correct for 2020, wrong since Android 13: the system owns per-app language and shows it in its own settings, so a private copy is a second source of truth that goes stale invisibly. Replaced with `AppCompatDelegate` and no storage at all (ADR-0009). |
+| `LazyColumn` for six fixed rows | Broke four tests on rows below the fold, and — more importantly — broke `selectableGroup`, so a screen reader saw six unrelated radios rather than one group. The test failure was the symptom; the container was the bug. |
+| Five `AppLocales` tests that could never pass | Written confidently, failed, and a probe showed why: Robolectric has no per-app locale store, so the call under test is a no-op there. Deleted rather than made to pass against a stub. |
+
+### The check that was worth a build cycle
+
+Lint's `MissingTranslation` was *assumed* to be guarding five locales across five modules. Rather
+than assume, one string was deleted from `values-fr` and lint run: it failed with the exact missing
+key, and went green again when restored. Five languages is precisely the surface that rots quietly,
+and "lint probably covers it" is not evidence.
+
 ### Honest assessment of the AI's contribution
 
 It wrote nearly all of the code and most of the prose, and it was fast at both. It was also wrong

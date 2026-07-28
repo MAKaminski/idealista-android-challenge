@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorites_title">Favoritos</string>
+    <string name="favorites_empty">Ainda não há favoritos. Toque no coração de um imóvel para o guardar.</string>
+    <string name="favorites_remove">Remover %1$s dos favoritos</string>
+    <string name="favorites_thumbnail">Fotografia do imóvel em %1$s</string>
+    <string name="favorite_saved_on">Adicionado aos favoritos a %1$s</string>
+</resources>

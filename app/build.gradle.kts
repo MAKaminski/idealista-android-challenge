@@ -11,6 +11,15 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
+
+    androidResources {
+        // Generates res/xml/_generated_res_locale_config.xml and points the manifest at it, so the
+        // five shipped languages also appear in Android's own per-app language settings — the
+        // in-app picker and the system screen then read the same list (ADR-0009).
+        generateLocaleConfig = true
+        // Declared explicitly so a stray transitive translation cannot silently join the picker.
+        localeFilters += listOf("en", "es", "fr", "pt", "it")
+    }
 }
 
 /**
@@ -47,6 +56,7 @@ dependencies {
     implementation(projects.feature.detail)
     implementation(projects.feature.favorites)
     implementation(projects.feature.list)
+    implementation(projects.feature.settings)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

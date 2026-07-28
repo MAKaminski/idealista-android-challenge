@@ -15,6 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import dev.mkaminski.idealista.feature.detail.AdDetailFragment
 import dev.mkaminski.idealista.feature.favorites.FavoritesFragment
 import dev.mkaminski.idealista.feature.list.AdListFragment
+import dev.mkaminski.idealista.feature.settings.SettingsFragment
 
 /**
  * Single-activity host. Screen-to-screen wiring lives here so no feature module depends on another
@@ -41,6 +42,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         bottomNav.setOnItemSelectedListener { item ->
             if (item.itemId == R.id.nav_favorites) {
                 showRoot(FavoritesFragment(), TAG_FAVORITES)
+            } else if (item.itemId == R.id.nav_settings) {
+                showRoot(SettingsFragment(), TAG_SETTINGS)
             } else {
                 showRoot(AdListFragment().withNavigation(), TAG_LIST)
             }
@@ -114,5 +117,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         const val TAG_LIST = "list"
         const val TAG_DETAIL = "detail"
         const val TAG_FAVORITES = "favorites"
+        const val TAG_SETTINGS = "settings"
     }
 }

@@ -13,3 +13,4 @@ Format: context → decision → consequences, including the costs we accepted.
 | [0006](ADR-0006-compose-interop.md) | Compose in two places, XML for the mandatory screens | Accepted |
 | [0007](ADR-0007-minsdk-desugaring.md) | minSdk 24 with core library desugaring for `java.time` | Accepted |
 | [0008](ADR-0008-filters-and-external-links.md) | Client-side filters scoped to the list payload; Custom Tabs for external links | Accepted |
+| [0009](ADR-0009-per-app-language.md) | Per-app language through `AppCompatDelegate`, with no private preference | Accepted |

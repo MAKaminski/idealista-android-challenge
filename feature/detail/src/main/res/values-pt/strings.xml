@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="detail_title">Detalhe do imóvel</string>
+    <string name="detail_error">Não foi possível carregar este imóvel.</string>
+    <string name="detail_retry">Tentar novamente</string>
+    <string name="detail_characteristics">Características</string>
+    <string name="detail_description">Descrição</string>
+    <string name="detail_energy">Certificado energético</string>
+    <string name="detail_energy_consumption">Consumo: %1$s</string>
+    <string name="detail_energy_emissions">Emissões: %1$s</string>
+    <string name="detail_rooms">%1$d divisões</string>
+    <string name="detail_baths">%1$d casas de banho</string>
+    <string name="detail_floor">Piso %1$s</string>
+    <string name="detail_lift">Elevador</string>
+    <string name="detail_no_lift">Sem elevador</string>
+    <string name="detail_community_costs">Condomínio %1$s</string>
+    <string name="detail_gallery_image">Fotografia %1$d de %2$d: %3$s</string>
+    <string name="detail_favorite_add">Adicionar aos favoritos</string>
+    <string name="detail_favorite_remove">Remover dos favoritos</string>
+    <string name="favorite_saved_on">Adicionado aos favoritos a %1$s</string>
+    <string name="detail_features">Equipamentos e extras</string>
+    <string name="detail_location">Localização</string>
+    <string name="detail_feature_air_conditioning">Ar condicionado</string>
+    <string name="detail_feature_box_room">Arrecadação</string>
+    <string name="detail_feature_pool">Piscina</string>
+    <string name="detail_feature_terrace">Terraço</string>
+    <string name="detail_feature_garden">Jardim</string>
+    <string name="detail_feature_parking">Estacionamento</string>
+    <string name="detail_feature_parking_included">Estacionamento incluído</string>
+    <string name="detail_feature_exterior">Exterior</string>
+    <string name="detail_no_features">Nada de extra indicado para este imóvel.</string>
+    <string name="detail_section_count">%1$d</string>
+    <string name="detail_open_listing">Abrir no idealista</string>
+    <string name="detail_open_map">Abrir no Maps</string>
+    <string name="detail_photo_open">Abrir a fotografia %1$d no navegador</string>
+</resources>

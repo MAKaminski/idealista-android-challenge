@@ -12,6 +12,9 @@ android {
 }
 
 dependencies {
+    // AppLocales speaks in AppLanguage, so every consumer of the toolkit gets the type too.
+    api(projects.core.model)
+
     // `api` on purpose: features consume the theme and its widgets together, in both toolkits.
     api(libs.material)
     api(libs.androidx.appcompat)
