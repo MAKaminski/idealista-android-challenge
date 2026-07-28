@@ -8,10 +8,14 @@ The original brief is preserved verbatim at the bottom of this file.
 ## Run it
 
 ```bash
-./gradlew installDebug          # onto a running emulator or device
+./gradlew runDebug              # build, install AND launch on a running emulator/device
 ./gradlew testDebugUnitTest     # 37 tests
 ./gradlew lint assembleDebug
 ```
+
+`runDebug` exists because `installDebug` only installs — it does not start the app, and `adb` is
+often not on `PATH`. The task finds `adb` via `local.properties` or `ANDROID_HOME` and launches the
+activity, so nothing has to be done by hand.
 
 Needs the Android SDK (`platforms;android-37.1`, `build-tools;37.0.0`) and a JDK 21 to run Gradle;
 the build itself targets JDK 17 through a toolchain it provisions automatically. Every green CI run

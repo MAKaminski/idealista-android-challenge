@@ -45,6 +45,7 @@ echo "sdk.dir=$HOME/Android/sdk" > local.properties
 Then (all commands from the repo root, via the wrapper — never a system `gradle`):
 
 ```bash
+./gradlew runDebug               # build, install and LAUNCH on a device/emulator
 ./gradlew assembleDebug          # build the debug APK
 ./gradlew testDebugUnitTest      # all JVM + Robolectric tests
 ./gradlew lint                   # Android lint

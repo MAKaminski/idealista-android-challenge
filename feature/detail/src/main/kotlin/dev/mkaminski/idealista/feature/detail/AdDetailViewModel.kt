@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 sealed interface AdDetailUiState {
     data object Loading : AdDetailUiState
@@ -35,6 +36,7 @@ class AdDetailViewModel @Inject constructor(
 
     private val retries = MutableStateFlow(0)
 
+    @OptIn(ExperimentalCoroutinesApi::class) // flatMapLatest
     // `catch` sits *inside* flatMapLatest on purpose: outside it, a failure completes the whole
     // chain, `retries` stops being collected and retry() can never re-subscribe.
     val uiState: StateFlow<AdDetailUiState> = retries
