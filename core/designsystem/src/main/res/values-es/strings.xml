@@ -2,4 +2,5 @@
 <resources>
     <string name="accordion_expand">Mostrar %1$s</string>
     <string name="accordion_collapse">Ocultar %1$s</string>
+    <string name="link_no_app">Ninguna aplicación puede abrir ese enlace.</string>
 </resources>

@@ -24,10 +24,12 @@ requirement for a bonus.
 | Phase | State |
 |---|---|
 | Steps 1–9 — build, data, both XML screens, Compose, tests, CI, docs | ✅ **complete** |
-| Verification | `lint testDebugUnitTest assembleDebug` green · **53 tests** |
+| Beyond the brief — accordions, filters, external links, edge-to-edge insets | ✅ **complete** |
+| Verification | `lint testDebugUnitTest assembleDebug` green · **86 tests** |
 
-The app is feature-complete against the brief. The one thing not executed anywhere is the Espresso
-end-to-end test — authored and compiling, but it needs a device (see `docs/TESTING.md`).
+The app is feature-complete against the brief. Two things are not covered by an executed test: the
+Espresso end-to-end test (authored and compiling, needs a device) and the window-insets fix (needs a
+real window). Both are stated as such in `docs/TESTING.md` rather than counted as passing.
 
 Do not describe unwritten code as if it exists. `docs/DELIVERY_LOG.md` is the source of truth for
 what has actually been built and verified.
@@ -90,9 +92,10 @@ levels live in `build-logic`'s `Sdk` object and module scripts only set their `n
 
 ```
 :app                  Application, Hilt setup, MainActivity, bottom nav, screen wiring
-:core:model           pure-Kotlin domain models — no Android dependencies
+:core:model           pure-Kotlin domain models, filter logic, URL builders — no Android deps
 :core:data            Retrofit + kotlinx.serialization, Room, DTOs, mappers, repositories
-:core:designsystem    Material 3 theme + matching Compose theme, drawables, shared formatters
+:core:designsystem    Material 3 theme + matching Compose theme, drawables, shared formatters,
+                      AccordionSection, ExternalLinks
 :core:testing         shared test fixtures (TestAds)
 :feature:list         XML list screen
 :feature:detail       XML detail screen (+ an embedded ComposeView characteristics panel)
@@ -103,7 +106,9 @@ Rules:
 
 - `:feature:*` → `:core:data` → `:core:model`. Features never depend on each other.
 - **DTOs never leave `:core:data`.** Map to `:core:model` types at the data-source boundary.
-- `:core:model` stays free of Android imports so it tests on the JVM.
+- `:core:model` stays free of Android imports so it tests on the JVM. It is a plain JVM module, so
+  its convention plugin aliases `testDebugUnitTest` to `test` — otherwise the one command CI runs
+  would skip it silently.
 
 ## 6. API quirks — do NOT "fix" these
 
@@ -140,6 +145,16 @@ tables are in [`docs/API.md`](docs/API.md).
 - `contentDescription` on every meaningful image and toggle.
 - Dates are stored as epoch millis and formatted with `java.time` +
   `DateTimeFormatter.ofLocalizedDate(MEDIUM)` in the system zone.
+- The app draws **edge-to-edge**. Anything that owns a system bar consumes its inset:
+  `fitsSystemWindows` on an `AppBarLayout`, `windowInsetsPadding` in Compose, an
+  `OnApplyWindowInsetsListener` for the bottom nav. Never fix an overlap with a fixed margin — it is
+  right on one device and wrong on every other.
+- Filtering is **client-side over the Room cache** and lives as pure functions in `:core:model`
+  (`AdFilters`, `Ad.matches`, `applyFilters`). Only offer a filter the **list** payload can answer —
+  detail-only fields describe ad 1 for every ad (see §6), so a filter over them is a lie. The chip
+  row is rebuilt from state on every emission; do not mutate chips in place.
+- External destinations go through `ExternalLinks` (Custom Tabs, `ACTION_VIEW` fallback, Toast when
+  nothing handles it). Never `startActivity` a URL directly from a fragment.
 
 ## 8. Testing requirements
 

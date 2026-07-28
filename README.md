@@ -1,7 +1,7 @@
 # idealista Android challenge — submission
 
 An Android app for browsing property ads: a list screen, a detail screen, and favorites that show the
-date each ad was saved. Kotlin, XML views, multi-module, 53 tests, CI.
+date each ad was saved. Kotlin, XML views, multi-module, 86 tests, CI.
 
 The original brief is preserved verbatim at the bottom of this file.
 
@@ -9,7 +9,7 @@ The original brief is preserved verbatim at the bottom of this file.
 
 ```bash
 ./gradlew runDebug              # build, install AND launch on a running emulator/device
-./gradlew testDebugUnitTest     # 53 tests
+./gradlew testDebugUnitTest     # 86 tests
 ./gradlew lint assembleDebug
 ```
 
@@ -31,8 +31,10 @@ also publishes a debug APK as an artifact, so the app can be sideloaded without 
 | **Detail screen** | ✅ | `AdDetailFragment` — collapsing toolbar, ViewPager2 gallery, characteristics, energy certificate |
 | **Favorite an ad** | ✅ | `favorites` table + `AdRepository.toggleFavorite` |
 | **Show the favorited date** | ✅ | On the list card, the detail screen and the favorites screen — one source, three surfaces |
+| *Beyond the brief* — filtering | ✅ | Chip row over operation, rooms, baths, exterior, parking, amenities, price ([ADR-0008](docs/DECISIONS/ADR-0008-filters-and-external-links.md)) |
+| *Beyond the brief* — external links | ✅ | Listing page and full-size photos in a Custom Tab; the address in a maps app |
 | **Use AI tools** | ✅ | [`docs/AI_USAGE.md`](docs/AI_USAGE.md) — including what the AI got *wrong* |
-| *Bonus* — tests | ✅ | 53 automated tests, including image-to-ad alignment, [`docs/TESTING.md`](docs/TESTING.md) |
+| *Bonus* — tests | ✅ | 86 automated tests, including image-to-ad alignment, [`docs/TESTING.md`](docs/TESTING.md) |
 | *Bonus* — Compose alongside XML | ✅ | A Compose-only favorites screen **and** a `ComposeView` inside the XML detail screen |
 | *Bonus* — persistent storage | ✅ | Room: ad cache + favorites, survives restarts and offline |
 | *Bonus* — AI context files | ✅ | [`CLAUDE.md`](CLAUDE.md) |
@@ -83,7 +85,7 @@ Full detail in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 | [`docs/AI_USAGE.md`](docs/AI_USAGE.md) | Which AI tools, what they got wrong, how it was caught |
 | [`docs/API.md`](docs/API.md) | Both endpoints, every field, and the three quirks |
 | [`docs/TESTING.md`](docs/TESTING.md) | Test tiers, and which cannot run headless |
-| [`docs/DECISIONS/`](docs/DECISIONS/) | 7 ADRs |
+| [`docs/DECISIONS/`](docs/DECISIONS/) | 8 ADRs |
 | [`CLAUDE.md`](CLAUDE.md) | Project context for AI tools |
 
 ## Known limitations
@@ -95,8 +97,13 @@ Full detail in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
   built-in Kotlin 2.2.10 compiler cannot read. Same reason Kotlin itself is not on 2.4 — KSP has not
   shipped it (ADR-0001).
 - **Robolectric is pinned to SDK 36** while the app targets 37; Robolectric has no API 37 runtime yet.
-- The detail screen shows no map. The coordinates are parsed and available; a map needs an API key,
-  which a submission should not carry.
+- The detail screen shows no **embedded** map — that needs an API key a submission should not carry.
+  The address instead opens in whichever maps app the device has, via a `geo:` URI.
+- **The listing links are well-formed but will not resolve.** The mock property codes are `1`–`4`
+  where real idealista codes are eight digits, so `https://www.idealista.com/inmueble/3/` has the
+  production URL shape and no production listing behind it. The photo and map links do work.
+- **The window-insets fix has no automated test.** Insets need a real window; Robolectric does not
+  dispatch them meaningfully. It was verified against the screenshots that reported the problem.
 
 ---
 

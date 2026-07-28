@@ -37,6 +37,7 @@ swiperefresh = "1.2.0"
 viewpager2 = "1.1.0"
 composeBom = "2026.06.01"
 activityCompose = "1.13.0"
+browser = "1.10.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
@@ -79,6 +80,7 @@ coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 hilt-navigation-fragment = { group = "androidx.hilt", name = "hilt-navigation-fragment", version.ref = "hiltNavigation" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 androidx-viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2" }
 
 # Compose — versions come from the BOM, so these carry no version of their own.

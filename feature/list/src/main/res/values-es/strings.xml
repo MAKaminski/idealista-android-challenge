@@ -9,4 +9,22 @@
     <string name="favorite_add">Añadir a favoritos</string>
     <string name="favorite_remove">Quitar de favoritos</string>
     <string name="ad_thumbnail_description">Foto de la vivienda en %1$s</string>
+    <string name="filter_sale">En venta</string>
+    <string name="filter_rent">En alquiler</string>
+    <string name="filter_favorites">Favoritos</string>
+    <string name="filter_rooms">3+ habitaciones</string>
+    <string name="filter_baths">2+ baños</string>
+    <string name="filter_exterior">Exterior</string>
+    <string name="filter_parking">Parking</string>
+    <string name="filter_air_conditioning">A/A</string>
+    <string name="filter_pool">Piscina</string>
+    <string name="filter_terrace">Terraza</string>
+    <string name="filter_garden">Jardín</string>
+    <string name="filter_price_low">Precio ↑</string>
+    <string name="filter_clear">Borrar</string>
+    <plurals name="list_result_count">
+        <item quantity="one">%1$d vivienda</item>
+        <item quantity="other">%1$d viviendas</item>
+    </plurals>
+    <string name="list_empty_filtered">Ninguna vivienda coincide con estos filtros.</string>
 </resources>

@@ -33,6 +33,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             add("implementation", libs.findLibrary("androidx-swiperefreshlayout").get())
             add("implementation", libs.findLibrary("coil").get())
             add("implementation", libs.findLibrary("coil-network-okhttp").get())
+            add("implementation", libs.findLibrary("androidx-browser").get())
             add("implementation", libs.findLibrary("hilt-navigation-fragment").get())
 
             add("testImplementation", libs.findLibrary("junit").get())

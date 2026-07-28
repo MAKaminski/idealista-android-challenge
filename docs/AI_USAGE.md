@@ -120,6 +120,34 @@ click-through. That test is the reason it isn't shipping.
 - Amending ADR-0001 with the evidence each time a pin turned out to be wrong, rather than quietly
   editing the version numbers.
 
+## Session 7 — three reports from the running app (2026-07-28)
+
+Insets, external links and filters, prompted by a user with the app in front of them. Different
+failure mode from the earlier sessions: nothing here was caught by a compiler. The reports were
+*"fix the margin so it doesn't look like shit"*, *"if URLs are provided then embed links"*, and
+*"add filters based on the tags +/- standard RE logic"*.
+
+### What the AI got right without prompting
+
+Diagnosing the margin as an edge-to-edge inset bug rather than a padding value, and fixing it at all
+four surfaces that own a system bar rather than the one in the screenshot. A fixed `marginTop` would
+have satisfied both screenshots and been wrong on the next device.
+
+### What was corrected by hand
+
+| Correction | Why |
+|---|---|
+| The AI offered filters over lift, floor and community costs | Those are detail-only fields, and the detail response always describes ad 1 (ADR-0005). Every ad would have matched identically. Cut before writing them. |
+| Listing URLs presented without qualification | The mock codes are `1`–`4`; real ones are eight digits, so the links cannot resolve. The KDoc, the ADR and the README now say so instead of letting a reviewer click and find out. |
+| `:core:model` tests were not running | The suite was reported as 86 tests, but `testDebugUnitTest` skips a variant-less JVM module — eighteen of them never ran. Found by checking the task graph rather than trusting the number. Fixed with an alias in the convention plugin. |
+| The insets fix was nearly logged as covered | It has no test and cannot easily have one. `TESTING.md` now carries a row that says zero, not a row that omits it. |
+
+### The pattern worth naming
+
+Sessions 3–6 were wrong about facts a build could check. This session was wrong about facts only a
+*payload* could check — filters that compile, run, and quietly match everything. The defence is the
+same either way: run it and look, rather than reading the code and agreeing with it.
+
 ### Honest assessment of the AI's contribution
 
 It wrote nearly all of the code and most of the prose, and it was fast at both. It was also wrong

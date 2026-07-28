@@ -41,6 +41,81 @@ is the gate that proves the AGP 9 / Hilt / KSP combination compiles before any a
 
 ---
 
+## 2026-07-28 — Insets, external links, and filtering the list
+
+Three reports from the running app, in one pass: *"fix the margin so it doesn't look like shit"*,
+*"if URLs to the underlying sites are provided then embed links as such and leverage the browser"*,
+and *"add filters from the Properties page that are based on the tags +/- standard RE logic"*.
+
+### The margin was an edge-to-edge bug, not a padding value
+
+Two screenshots showed it precisely: the detail toolbar title sat under the camera cutout, and the
+first favorites card sat under the status bar. Targeting SDK 35+ makes the app draw edge-to-edge by
+default; nothing was consuming the system bar insets, so content drew behind them. Adding a fixed
+`marginTop` would have looked right on one device and wrong on every other.
+
+Fixed at the three places that own a system bar:
+
+| Surface | Fix |
+|---|---|
+| Detail app bar | `fitsSystemWindows="true"` on the `AppBarLayout` |
+| List app bar | same |
+| Compose favorites | `windowInsetsPadding(WindowInsets.statusBars)` on all three state branches |
+| Bottom nav | `setOnApplyWindowInsetsListener` applying the `navigationBars` bottom inset as padding |
+
+`activity_main.xml` became a vertical `LinearLayout` (weighted container + nav) so the nav bar's own
+inset padding does not overlap the content it sits below.
+
+### Links: the data has real URLs, so they are now real links
+
+Three destinations exist in the payloads and none of them were reachable from the UI:
+
+| Destination | Source | Opens as |
+|---|---|---|
+| The listing page | `propertyCode` → `https://www.idealista.com/inmueble/{code}/` | Custom Tab |
+| The property on a map | `latitude` / `longitude` | `geo:` URI, maps web fallback |
+| A gallery photo full-size | `multimedia.images[].url` | Custom Tab |
+
+Custom Tabs rather than a raw browser hand-off: it keeps the back stack and the app's colours.
+`ExternalLinks` falls back to `ACTION_VIEW`, and a device with no handler gets a Toast — not a crash.
+That fallback is the one path a user could hit on a stripped device, so it has its own test.
+
+Honest limit, stated in `AdLinks`' KDoc: the mock property codes are `1`–`4`, so the constructed
+listing URLs are **well-formed but will not resolve to real listings**. The URL shape is the
+production one; the data is not.
+
+### Filters: only what the list payload can actually answer
+
+Standard real-estate filters, restricted to fields present on **every** list ad — operation, rooms,
+bathrooms, price, size, exterior, parking — plus the amenity flags that vary per ad
+(`hasAirConditioning`, `hasSwimmingPool`, `hasTerrace`, `hasGarden`), which are treated as opt-in
+and AND-ed. Lift, floor and community costs are detail-only and were deliberately **not** offered: a
+filter that silently matches nothing is worse than no filter.
+
+The logic is pure Kotlin in `:core:model` (`AdFilters`, `Ad.matches`, `List<Ad>.applyFilters`), so it
+tests on the JVM with no Android runtime. The ViewModel combines it as a fourth flow over the cache —
+filtering is client-side, so it works offline and costs no request. A new `NoMatches` state says
+"nothing matches these filters" rather than reusing `Empty`, which would have read as a failed load.
+
+### Verification
+
+| Command | Result |
+|---|---|
+| `./gradlew lint testDebugUnitTest assembleDebug` | **BUILD SUCCESSFUL in 57s** |
+| Test count | **86** (was 71) |
+| `./gradlew :core:model:test` | 18 tests — filter and link logic, no Android runtime |
+| `./gradlew :feature:list:testDebugUnitTest` | 23 tests — 4 new ViewModel filter tests, 8 new chip-row tests |
+| `./gradlew :core:designsystem:testDebugUnitTest` | 9 tests — 3 new, including the no-handler fallback |
+
+### Not verified
+
+The insets fix is asserted by inspection and by the layout attributes, not by a test — window insets
+need a real window, and Robolectric does not dispatch them meaningfully. The two screenshots that
+reported the bug are the evidence for the fix; a reviewer with a device should re-check on a cutout
+display. Said plainly rather than counted as covered.
+
+---
+
 ## 2026-07-28 — Wrong photos, and collapsible detail sections
 
 Reported from the running app: *"various links are loading the incorrect pictures"*. Correct, and it

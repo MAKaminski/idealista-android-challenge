@@ -13,10 +13,12 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.google.android.material.chip.Chip
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
+import dev.mkaminski.idealista.designsystem.ExternalLinks
 import dev.mkaminski.idealista.designsystem.Formatters
 import dev.mkaminski.idealista.designsystem.IdealistaTheme
 import dev.mkaminski.idealista.feature.detail.databinding.FragmentAdDetailBinding
 import dev.mkaminski.idealista.model.AdDetail
+import dev.mkaminski.idealista.model.AdLinks
 import kotlinx.coroutines.launch
 
 /**
@@ -39,7 +41,9 @@ class AdDetailFragment : Fragment(R.layout.fragment_ad_detail) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentAdDetailBinding.bind(view).also { this.binding = it }
 
-        val galleryAdapter = GalleryAdapter()
+        val galleryAdapter = GalleryAdapter(
+            onImageClick = { image -> ExternalLinks.openInBrowser(requireContext(), image.url) },
+        )
         binding.gallery.adapter = galleryAdapter
         TabLayoutMediator(binding.galleryIndicator, binding.gallery) { _, _ -> }.attach()
 
@@ -72,6 +76,20 @@ class AdDetailFragment : Fragment(R.layout.fragment_ad_detail) {
         gallery.submitList(detail.gallery)
         galleryIndicator.visibility =
             if (detail.gallery.size > 1) View.VISIBLE else View.GONE
+
+        // External destinations. The photo and map links use data the API really provides; the
+        // listing URL is built from idealista's public URL shape and will not resolve for the mock
+        // property codes — see AdLinks.
+        toolbar.menu.findItem(R.id.action_open_listing)?.setOnMenuItemClickListener {
+            ExternalLinks.openInBrowser(context, AdLinks.listingUrl(ad.propertyCode))
+            true
+        }
+        openMap.setOnClickListener {
+            ExternalLinks.openExternally(
+                context,
+                AdLinks.mapUri(ad.latitude, ad.longitude, ad.address),
+            )
+        }
 
         price.text = Formatters.price(ad.price, ad.currencySuffix)
         address.text = ad.address

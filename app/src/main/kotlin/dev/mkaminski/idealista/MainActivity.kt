@@ -4,7 +4,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -27,6 +30,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         super.onCreate(savedInstanceState)
 
         bottomNav = findViewById(R.id.bottomNav)
+        // Edge-to-edge draws behind the system bars, so the gesture bar's space has to be given
+        // back explicitly — otherwise the last tab row sits under it.
+        ViewCompat.setOnApplyWindowInsetsListener(bottomNav) { view, windowInsets ->
+            val bars = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            view.updatePadding(bottom = bars.bottom)
+            windowInsets
+        }
         // AGP 9 makes R fields non-final, so menu ids cannot be `when` branches (ADR-0001).
         bottomNav.setOnItemSelectedListener { item ->
             if (item.itemId == R.id.nav_favorites) {

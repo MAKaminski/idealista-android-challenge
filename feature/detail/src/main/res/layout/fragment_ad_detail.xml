@@ -43,6 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
+                app:menu="@menu/detail"
                 app:navigationIcon="@drawable/ic_arrow_back" />
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
@@ -139,6 +140,14 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?attr/textAppearanceBodyMedium"
                     tools:text="Barrio de Salamanca · Madrid · 40.436, -3.683" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/openMap"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/detail_open_map" />
             </dev.mkaminski.idealista.designsystem.AccordionSection>
 
             <dev.mkaminski.idealista.designsystem.AccordionSection

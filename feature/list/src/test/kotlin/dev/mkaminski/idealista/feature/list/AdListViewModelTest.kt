@@ -5,6 +5,7 @@ import dev.mkaminski.idealista.data.AdRepository
 import dev.mkaminski.idealista.model.Ad
 import dev.mkaminski.idealista.model.AdDetail
 import dev.mkaminski.idealista.model.AdFeatures
+import dev.mkaminski.idealista.model.AdFilters
 import dev.mkaminski.idealista.model.Operation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -119,12 +120,79 @@ class AdListViewModelTest {
         }
     }
 
-    private fun ad(code: String) = Ad(
+    // --- filtering -------------------------------------------------------------------------
+    // Filtering is client-side over the cache; these assert that it narrows the *view* without
+    // ever looking like a load failure or losing the underlying cache.
+
+    @Test
+    fun `filters narrow the visible ads while the total still counts the cache`() = runTest {
+        repository.ads.value = listOf(ad("1"), ad("2", operation = Operation.RENT))
+        val viewModel = AdListViewModel(repository)
+
+        viewModel.updateFilters { it.copy(operation = Operation.RENT) }
+
+        viewModel.uiState.test {
+            val state = expectMostRecentItem() as AdListUiState.Content
+            assertEquals(listOf("2"), state.ads.map(Ad::propertyCode))
+            assertEquals(2, state.totalCount)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    /** "Nothing matches" must not be confused with "nothing loaded" — different message, different fix. */
+    @Test
+    fun `filters that exclude everything show no matches rather than the empty state`() = runTest {
+        repository.ads.value = listOf(ad("1"))
+        val viewModel = AdListViewModel(repository)
+
+        viewModel.updateFilters { it.copy(minRooms = 99) }
+
+        viewModel.uiState.test {
+            assertEquals(AdListUiState.NoMatches, expectMostRecentItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `clearing the filters restores the full list`() = runTest {
+        repository.ads.value = listOf(ad("1"), ad("2", operation = Operation.RENT))
+        val viewModel = AdListViewModel(repository)
+        viewModel.updateFilters { it.copy(operation = Operation.RENT) }
+
+        viewModel.clearFilters()
+
+        assertEquals(AdFilters(), viewModel.filters.value)
+        viewModel.uiState.test {
+            val state = expectMostRecentItem() as AdListUiState.Content
+            assertEquals(2, state.ads.size)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    /** The favorites filter reads the same favorite state the list badge does — one source. */
+    @Test
+    fun `the favorites filter follows the favorite toggle`() = runTest {
+        repository.ads.value = listOf(ad("1"), ad("2"))
+        val viewModel = AdListViewModel(repository)
+        viewModel.updateFilters { it.copy(favoritesOnly = true) }
+
+        viewModel.uiState.test {
+            assertEquals(AdListUiState.NoMatches, expectMostRecentItem())
+
+            viewModel.toggleFavorite("2")
+
+            val state = expectMostRecentItem() as AdListUiState.Content
+            assertEquals(listOf("2"), state.ads.map(Ad::propertyCode))
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    private fun ad(code: String, operation: Operation = Operation.SALE) = Ad(
         propertyCode = code,
         thumbnailUrl = null,
         price = 1000.0,
         currencySuffix = "€",
-        operation = Operation.SALE,
+        operation = operation,
         propertyType = "flat",
         sizeSquareMeters = 100.0,
         rooms = 3,

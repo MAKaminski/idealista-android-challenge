@@ -16,6 +16,7 @@ dependencies {
     api(libs.material)
     api(libs.androidx.appcompat)
     api(libs.androidx.constraintlayout)
+    api(libs.androidx.browser)
 
     api(platform(libs.androidx.compose.bom))
     api(libs.androidx.compose.material3)

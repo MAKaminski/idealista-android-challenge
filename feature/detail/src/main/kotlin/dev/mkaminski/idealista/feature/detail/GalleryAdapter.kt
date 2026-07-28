@@ -11,10 +11,13 @@ import coil3.request.placeholder
 import dev.mkaminski.idealista.feature.detail.databinding.ItemGalleryImageBinding
 import dev.mkaminski.idealista.model.AdImage
 
-internal class GalleryAdapter : ListAdapter<AdImage, GalleryAdapter.ImageViewHolder>(DIFF) {
+internal class GalleryAdapter(
+    private val onImageClick: (AdImage) -> Unit,
+) : ListAdapter<AdImage, GalleryAdapter.ImageViewHolder>(DIFF) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ImageViewHolder(
         ItemGalleryImageBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+        onImageClick,
     )
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) =
@@ -22,6 +25,7 @@ internal class GalleryAdapter : ListAdapter<AdImage, GalleryAdapter.ImageViewHol
 
     internal class ImageViewHolder(
         private val binding: ItemGalleryImageBinding,
+        private val onImageClick: (AdImage) -> Unit,
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(image: AdImage, position: Int, total: Int) {
@@ -37,6 +41,8 @@ internal class GalleryAdapter : ListAdapter<AdImage, GalleryAdapter.ImageViewHol
                 total,
                 image.localizedName ?: image.tag.orEmpty(),
             )
+            // The photo URLs are real and public, so the full-size image opens in the browser.
+            binding.galleryImage.setOnClickListener { onImageClick(image) }
         }
     }
 

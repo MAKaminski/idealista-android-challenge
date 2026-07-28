@@ -30,4 +30,7 @@
     <string name="detail_feature_exterior">Exterior</string>
     <string name="detail_no_features">Nothing extra listed for this property.</string>
     <string name="detail_section_count">%1$d</string>
+    <string name="detail_open_listing">Open on idealista</string>
+    <string name="detail_open_map">Open in Maps</string>
+    <string name="detail_photo_open">Open photo %1$d in the browser</string>
 </resources>

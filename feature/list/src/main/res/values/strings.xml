@@ -9,4 +9,22 @@
     <string name="favorite_add">Add to favorites</string>
     <string name="favorite_remove">Remove from favorites</string>
     <string name="ad_thumbnail_description">Photo of the property at %1$s</string>
+    <string name="filter_sale">For sale</string>
+    <string name="filter_rent">For rent</string>
+    <string name="filter_favorites">Favorites</string>
+    <string name="filter_rooms">3+ rooms</string>
+    <string name="filter_baths">2+ baths</string>
+    <string name="filter_exterior">Exterior</string>
+    <string name="filter_parking">Parking</string>
+    <string name="filter_air_conditioning">A/C</string>
+    <string name="filter_pool">Pool</string>
+    <string name="filter_terrace">Terrace</string>
+    <string name="filter_garden">Garden</string>
+    <string name="filter_price_low">Price ↑</string>
+    <string name="filter_clear">Clear</string>
+    <plurals name="list_result_count">
+        <item quantity="one">%1$d property</item>
+        <item quantity="other">%1$d properties</item>
+    </plurals>
+    <string name="list_empty_filtered">No properties match these filters.</string>
 </resources>

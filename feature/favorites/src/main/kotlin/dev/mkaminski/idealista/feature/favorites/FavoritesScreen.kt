@@ -5,6 +5,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -40,11 +44,17 @@ fun FavoritesScreen(
     modifier: Modifier = Modifier,
 ) {
     when (state) {
-        FavoritesUiState.Loading -> Box(modifier.fillMaxSize(), Alignment.Center) {
+        FavoritesUiState.Loading -> Box(
+            modifier.fillMaxSize().windowInsetsPadding(WindowInsets.statusBars),
+            Alignment.Center,
+        ) {
             CircularProgressIndicator()
         }
 
-        FavoritesUiState.Empty -> Box(modifier.fillMaxSize(), Alignment.Center) {
+        FavoritesUiState.Empty -> Box(
+            modifier.fillMaxSize().windowInsetsPadding(WindowInsets.statusBars),
+            Alignment.Center,
+        ) {
             Text(
                 text = stringResource(R.string.favorites_empty),
                 style = MaterialTheme.typography.bodyLarge,
@@ -52,9 +62,10 @@ fun FavoritesScreen(
             )
         }
 
+        // Edge-to-edge: without this the first card sits under the status bar and the camera cutout.
         is FavoritesUiState.Content -> LazyColumn(
-            modifier = modifier.fillMaxSize().testTag(TAG_LIST),
-            contentPadding = PaddingValues(vertical = 8.dp),
+            modifier = modifier.fillMaxSize().windowInsetsPadding(WindowInsets.statusBars).testTag(TAG_LIST),
+            contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(state.favorites, key = { it.propertyCode }) { ad ->
